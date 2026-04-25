@@ -1,0 +1,2409 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DM Pomocník – Jeskyně a Draci</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0e0b07;--bg2:#171209;--bg3:#1f1810;--bg4:#2a2016;
+    --border:#3d2e1a;--border2:#5a4228;
+    --gold:#c9953a;--gold2:#e8b860;--gold3:#f5d48a;
+    --red:#8b2020;--red2:#c0392b;--red3:#e74c3c;
+    --green:#1a4a1a;--green2:#27ae60;
+    --text:#e8dcc8;--text2:#b8a88a;--text3:#7a6a52;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Crimson Pro',Georgia,serif;font-size:16px;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.5;}
+
+  nav{background:linear-gradient(180deg,#1a1208 0%,var(--bg2) 100%);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:100;display:flex;align-items:stretch;}
+  .nav-brand{padding:12px 20px;font-family:'Cinzel',serif;font-weight:900;font-size:1.1rem;color:var(--gold2);border-right:1px solid var(--border);white-space:nowrap;display:flex;align-items:center;gap:8px;text-shadow:0 0 20px rgba(201,149,58,0.4);}
+  .nav-tabs{display:flex;overflow-x:auto;flex:1;scrollbar-width:none;}
+  .nav-tabs::-webkit-scrollbar{display:none;}
+  .nav-tab{padding:12px 16px;cursor:pointer;font-family:'Cinzel',serif;font-size:0.75rem;font-weight:600;letter-spacing:0.08em;color:var(--text3);border:none;background:none;border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
+  .nav-tab:hover{color:var(--text2);background:rgba(201,149,58,0.05);}
+  .nav-tab.active{color:var(--gold2);border-bottom-color:var(--gold);background:rgba(201,149,58,0.08);}
+  .nav-actions{padding:8px 12px;display:flex;align-items:center;gap:8px;border-left:1px solid var(--border);}
+
+  .btn{padding:7px 14px;border:none;cursor:pointer;font-family:'Cinzel',serif;font-size:0.72rem;font-weight:600;letter-spacing:0.06em;border-radius:3px;transition:all 0.2s;display:inline-flex;align-items:center;gap:5px;}
+  .btn-gold{background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);color:#1a1000;}
+  .btn-gold:hover{background:linear-gradient(135deg,var(--gold2) 0%,var(--gold3) 100%);transform:translateY(-1px);box-shadow:0 4px 12px rgba(201,149,58,0.3);}
+  .btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2);}
+  .btn-outline:hover{border-color:var(--gold);color:var(--gold2);}
+  .btn-danger{background:transparent;border:1px solid var(--red);color:var(--red3);}
+  .btn-danger:hover{background:var(--red);color:white;}
+  .btn-sm{padding:4px 10px;font-size:0.68rem;}
+  .btn-icon{padding:6px 10px;}
+
+  main{padding:20px;max-width:1400px;margin:0 auto;}
+  .page{display:none;}
+  .page.active{display:block;}
+
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:20px;margin-bottom:16px;}
+  .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .card-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:600;color:var(--gold2);display:flex;align-items:center;gap:8px;}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media(max-width:900px){.grid-3,.grid-4{grid-template-columns:1fr 1fr;}}
+  @media(max-width:600px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}}
+
+  .form-group{margin-bottom:14px;}
+  .form-label{display:block;font-family:'Cinzel',serif;font-size:0.72rem;font-weight:600;letter-spacing:0.06em;color:var(--text3);margin-bottom:5px;text-transform:uppercase;}
+  .form-input,.form-select,.form-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:3px;font-family:'Crimson Pro',serif;font-size:0.95rem;transition:border-color 0.2s;}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--gold);background:var(--bg4);}
+  .form-textarea{min-height:90px;resize:vertical;}
+  .form-select option{background:var(--bg3);}
+  .form-row{display:flex;gap:12px;}
+  .form-row .form-group{flex:1;}
+
+  .item-list{display:flex;flex-direction:column;gap:8px;}
+  .item-card{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:14px 16px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .item-card:hover{border-color:var(--border2);background:var(--bg4);}
+  .item-card.selected{border-color:var(--gold);background:rgba(201,149,58,0.06);}
+  .item-name{font-family:'Cinzel',serif;font-size:0.9rem;font-weight:600;color:var(--text);}
+  .item-meta{font-size:0.82rem;color:var(--text3);margin-top:2px;}
+
+  .badge{padding:2px 8px;border-radius:2px;font-family:'Cinzel',serif;font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;}
+  .badge-gold{background:rgba(201,149,58,0.15);color:var(--gold2);border:1px solid var(--gold);}
+  .badge-red{background:rgba(139,32,32,0.2);color:var(--red3);border:1px solid var(--red);}
+  .badge-green{background:rgba(26,74,26,0.3);color:var(--green2);border:1px solid var(--green2);}
+  .badge-gray{background:rgba(122,106,82,0.15);color:var(--text3);border:1px solid var(--border);}
+
+  .stat-block{background:#f8f0dc;color:#1a0a00;border:2px solid #8b6914;border-radius:4px;padding:16px;font-family:'Crimson Pro',Georgia,serif;}
+  .stat-block h2{font-family:'Cinzel',serif;font-size:1.3rem;color:#5c2a00;}
+  .stat-block .stat-type{font-style:italic;font-size:0.9rem;color:#5c2a00;margin-bottom:8px;}
+  .stat-divider{border:none;border-top:2px solid #8b6914;margin:8px 0;}
+  .stat-property{margin:3px 0;font-size:0.9rem;}
+  .stat-property strong{color:#5c2a00;}
+  .stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;text-align:center;margin:8px 0;}
+  .stat-box{background:rgba(139,105,20,0.1);border-radius:3px;padding:4px;}
+  .stat-box .stat-name{font-size:0.65rem;font-weight:700;color:#5c2a00;text-transform:uppercase;}
+  .stat-box .stat-val{font-size:1.1rem;font-weight:700;}
+  .stat-box .stat-mod{font-size:0.75rem;color:#5c2a00;}
+
+  /* COMBAT */
+  .combatant-row{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:10px 14px;display:flex;align-items:center;gap:12px;transition:all 0.2s;}
+  .combatant-row.active-turn{border-color:var(--gold);background:rgba(201,149,58,0.08);box-shadow:0 0 12px rgba(201,149,58,0.15);}
+  .combatant-row.dead{opacity:0.4;}
+  .init-badge{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:900;font-size:1rem;flex-shrink:0;}
+  .init-badge.player{background:rgba(26,74,26,0.3);border:2px solid var(--green2);color:var(--green2);}
+  .init-badge.enemy{background:rgba(139,32,32,0.3);border:2px solid var(--red2);color:var(--red3);}
+  .init-badge.neutral{background:rgba(122,106,82,0.2);border:2px solid var(--border2);color:var(--text2);}
+  .hp-bar-wrap{flex:1;}
+  .hp-label{font-size:0.75rem;color:var(--text3);margin-bottom:3px;display:flex;justify-content:space-between;}
+  .hp-bar{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border);}
+  .hp-fill{height:100%;border-radius:4px;transition:width 0.3s,background-color 0.3s;}
+  .hp-controls{display:flex;align-items:center;gap:6px;}
+  .hp-input{width:55px;background:var(--bg4);border:1px solid var(--border2);color:var(--text);padding:4px 6px;border-radius:3px;font-family:'Crimson Pro',serif;font-size:0.9rem;text-align:center;}
+  .conditions{display:flex;gap:4px;flex-wrap:wrap;}
+  .condition-tag{padding:2px 6px;border-radius:2px;font-size:0.65rem;background:rgba(201,149,58,0.15);border:1px solid var(--border2);color:var(--gold2);cursor:pointer;font-family:'Cinzel',serif;}
+  .condition-tag:hover{background:rgba(201,149,58,0.3);}
+  .turn-indicator{display:flex;align-items:center;gap:12px;padding:10px 16px;background:rgba(201,149,58,0.08);border:1px solid var(--gold);border-radius:4px;margin-bottom:16px;}
+  .turn-round{font-family:'Cinzel',serif;font-size:0.78rem;color:var(--gold2);font-weight:600;}
+
+  /* MODAL */
+  .modal-overlay{display:none !important;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1100;justify-content:center;align-items:flex-start;padding:40px 20px;overflow-y:auto;}
+  .modal-overlay.open{display:flex !important;}
+  .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;width:100%;max-width:700px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.8);display:flex;flex-direction:column;max-height:calc(100vh - 60px);}
+  .modal-title{font-family:'Cinzel',serif;font-size:1.2rem;font-weight:900;color:var(--gold2);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;transition:color 0.2s;}
+  .modal-close:hover{color:var(--text);}
+  .modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:14px 24px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg2);}
+
+  .search-bar{display:flex;gap:10px;margin-bottom:16px;align-items:center;}
+  .search-input{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:3px;font-family:'Crimson Pro',serif;font-size:0.95rem;}
+  .search-input:focus{outline:none;border-color:var(--gold);}
+
+  .note-editor{width:100%;min-height:200px;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:16px;border-radius:3px;font-family:'Crimson Pro',serif;font-size:1rem;line-height:1.6;resize:vertical;}
+  .note-editor:focus{outline:none;border-color:var(--gold);}
+
+  .section-title{font-family:'Cinzel',serif;font-size:0.78rem;font-weight:600;letter-spacing:0.12em;color:var(--text3);text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:10px;}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  .flash{position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--green2);color:var(--green2);padding:10px 18px;border-radius:4px;font-family:'Cinzel',serif;font-size:0.8rem;font-weight:600;z-index:2000;opacity:0;transform:translateY(10px);transition:all 0.3s;}
+  .flash.show{opacity:1;transform:translateY(0);}
+
+  .empty-state{text-align:center;padding:60px 20px;color:var(--text3);}
+  .empty-state .empty-icon{font-size:3rem;margin-bottom:12px;opacity:0.5;}
+  .empty-state p{font-style:italic;margin-bottom:16px;}
+
+  .split-view{display:grid;grid-template-columns:300px 1fr;gap:0;min-height:calc(100vh - 130px);}
+  @media(max-width:800px){.split-view{grid-template-columns:1fr;}}
+  .list-panel{border-right:1px solid var(--border);padding-right:16px;overflow-y:auto;max-height:calc(100vh - 130px);}
+  .detail-panel{padding-left:20px;overflow-y:auto;max-height:calc(100vh - 130px);}
+
+  /* IMAGE UPLOAD */
+  .img-upload-area{border:2px dashed var(--border2);border-radius:6px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg3);}
+  .img-upload-area:hover{border-color:var(--gold);background:var(--bg4);}
+  .img-upload-area p{color:var(--text3);font-size:0.85rem;margin-top:6px;}
+  .entity-img{width:100%;max-height:220px;object-fit:cover;border-radius:4px;border:1px solid var(--border);}
+  .entity-img-small{width:48px;height:48px;object-fit:cover;border-radius:3px;border:1px solid var(--border);flex-shrink:0;}
+
+  /* ZASTENA (DM Screen) */
+  .zastena-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  @media(max-width:900px){.zastena-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:600px){.zastena-grid{grid-template-columns:1fr;}}
+  .zastena-panel{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;}
+  .zastena-panel-title{font-family:'Cinzel',serif;font-size:0.78rem;font-weight:600;letter-spacing:0.1em;color:var(--gold2);text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;}
+  .zastena-note{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:3px;font-family:'Crimson Pro',serif;font-size:0.95rem;line-height:1.6;resize:vertical;min-height:80px;}
+  .zastena-panel{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;}
+  .zastena-panel.wide{grid-column:span 2;}
+  .zastena-panel.full{grid-column:1/-1;}
+  .psz{background:none;border:1px solid var(--border);border-radius:3px;color:var(--text3);font-size:0.58rem;padding:1px 5px;cursor:pointer;font-family:'Cinzel',serif;}
+  .psz:hover,.psz.on{border-color:var(--gold);color:var(--gold);}
+  .zastena-note:focus{outline:none;border-color:var(--gold);}
+
+  /* DICE */
+  .dice-result-area{padding:14px;background:var(--bg4);border-radius:4px;text-align:center;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .dice-history{font-size:0.78rem;color:var(--text3);margin-top:4px;}
+
+  ::-webkit-scrollbar{width:6px;height:6px;}
+  ::-webkit-scrollbar-track{background:var(--bg2);}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+  /* MAP */
+  .map-area{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:4px;overflow:hidden;position:relative;}
+  .map-area img{width:100%;display:block;cursor:zoom-in;}
+  .map-placeholder{padding:40px;text-align:center;color:var(--text3);font-style:italic;}
+  .modal-body{flex:1;overflow-y:auto;padding:24px;}
+
+  /* ─── KALENDÁŘ ─────────────────────────────────────────────── */
+  .kal-day-header{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);text-align:center;padding:4px 2px;}
+  .kal-cell{min-height:52px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:4px;cursor:pointer;transition:all 0.12s;position:relative;display:flex;flex-direction:column;gap:2px;}
+  .kal-cell:hover{border-color:var(--gold);background:var(--bg2);}
+  .kal-cell.today{border-color:var(--gold2);box-shadow:0 0 0 1px var(--gold2);}
+  .kal-cell.selected{border-color:var(--gold);background:rgba(201,162,39,0.12);}
+  .kal-cell.other-month{opacity:0.35;}
+  .kal-cell.holiday{background:rgba(139,26,26,0.15);}
+  .kal-day-num{font-family:'Cinzel',serif;font-size:0.72rem;color:var(--text2);font-weight:600;}
+  .kal-cell.today .kal-day-num{color:var(--gold);font-weight:900;}
+  .kal-event-dot{font-size:0.6rem;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:1px 3px;border-radius:2px;background:rgba(201,162,39,0.2);color:var(--gold2);}
+  .kal-event-dot.holiday{background:rgba(139,26,26,0.2);color:var(--red2);}
+  .kal-event-dot.session{background:rgba(26,92,139,0.2);color:#5aabdd;}
+  .kal-event-dot.quest{background:rgba(26,92,26,0.2);color:var(--green2);}
+  .kal-holiday-name{font-family:'IM Fell English',serif;font-size:0.62rem;color:var(--red2);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .kal-event-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;margin-bottom:6px;}
+  .kal-event-icon{font-size:1.1rem;flex-shrink:0;}
+  .kal-event-name{font-family:'Cinzel',serif;font-size:0.8rem;color:var(--text);font-weight:600;}
+  .kal-event-meta{font-family:'Crimson Pro',serif;font-size:0.82rem;color:var(--text3);}
+  .kal-month-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;}
+  .kal-settings-input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:'Crimson Pro',serif;font-size:0.9rem;padding:2px 4px;outline:none;}
+  .kal-settings-input:focus{border-bottom-color:var(--gold);}
+
+  /* ── GOOGLE DRIVE SYNC ── */
+  .gdrive-bar {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 6px 16px; background: rgba(26,15,8,0.9);
+    border-bottom: 1px solid rgba(201,162,39,0.2);
+    font-family: 'Cinzel', serif; font-size: 0.65rem;
+    letter-spacing: 0.06em; flex-shrink: 0;
+  }
+  .gdrive-status {
+    display: flex; align-items: center; gap: 6px;
+    color: rgba(201,162,39,0.6);
+  }
+  .gdrive-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #555; flex-shrink: 0; transition: background 0.3s;
+  }
+  .gdrive-dot.connected  { background: #4caf50; }
+  .gdrive-dot.syncing    { background: #ff9800; animation: pulse 1s infinite; }
+  .gdrive-dot.error      { background: #f44336; }
+  @keyframes pulse {
+    0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+  }
+  .gdrive-btn {
+    padding: 3px 10px; border-radius: 3px; border: 1px solid rgba(201,162,39,0.4);
+    background: transparent; color: rgba(201,162,39,0.7); cursor: pointer;
+    font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.06em;
+    transition: all 0.15s;
+  }
+  .gdrive-btn:hover { border-color: var(--gold2); color: var(--gold2); }
+  .gdrive-btn.primary { background: #4caf50; border-color: #4caf50; color: #fff; font-weight: 700; }
+  .gdrive-btn.primary:hover { background: #43a047; }
+  .gdrive-last-sync { color: rgba(201,162,39,0.4); font-size: 0.58rem; margin-left: auto; }
+
+  /* Client ID modal */
+  .gdrive-setup-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.88); z-index: 2000;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .gdrive-setup-overlay.open { display: flex; }
+  .gdrive-setup-box {
+    background: var(--bg2); border: 2px solid var(--gold);
+    border-radius: 8px; padding: 24px; max-width: 580px; width: 100%;
+  }
+  .gdrive-step {
+    display: flex; gap: 12px; align-items: flex-start;
+    margin-bottom: 14px; padding-bottom: 14px;
+    border-bottom: 1px solid rgba(201,162,39,0.15);
+  }
+  .gdrive-step-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--gold); color: var(--bg); font-family: 'Cinzel', serif;
+    font-size: 0.8rem; font-weight: 700; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+  .gdrive-step-text { font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--text2); line-height: 1.5; }
+  .gdrive-step-text a { color: var(--gold2); }
+  .gdrive-step-text code {
+    background: rgba(0,0,0,0.3); padding: 1px 6px; border-radius: 3px;
+    font-family: monospace; font-size: 0.82rem; color: var(--gold3);
+  }
+</style>
+  <!-- Google API -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://apis.google.com/js/api.js" async defer></script>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">⚔️ DM Pomocník</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('dashboard',this)">🏰 Přehled</button>
+    <button class="nav-tab" onclick="showPage('bestiar',this)">🐉 Bestiář</button>
+    <button class="nav-tab" onclick="showPage('npc',this)">👤 NPC</button>
+    <button class="nav-tab" onclick="showPage('lokace',this)">🗺️ Lokace</button>
+    <button class="nav-tab" onclick="showPage('kampan',this)">📜 Kampaň</button>
+    <button class="nav-tab" onclick="showPage('pocitadlo',this)">🎲 Bojové počítadlo</button>
+    <button class="nav-tab" onclick="showPage('zastena',this)">🛡️ Zástěna</button>
+    <button class="nav-tab" onclick="showPage('kalendar',this)">📅 Kalendář</button>
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-outline btn-sm" onclick="exportData()">📤 Export</button>
+    <button class="btn btn-outline btn-sm" onclick="freeStorage()" title="Vymaže přebytečné obrázky a uvolní místo v prohlížeči">🗑 Uvolnit místo</button>
+    <button class="btn btn-outline btn-sm" onclick="document.getElementById('importFile').click()">📥 Import</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+</nav>
+
+<!-- Google Drive sync bar -->
+<div class="gdrive-bar" id="gdrive-bar">
+  <div class="gdrive-status">
+    <div class="gdrive-dot" id="gdrive-dot"></div>
+    <span id="gdrive-status-text">Google Drive: nepřipojen</span>
+  </div>
+  <button class="gdrive-btn primary" id="gdrive-connect-btn" onclick="gdriveConnect()">🔗 Připojit Drive</button>
+  <button class="gdrive-btn" id="gdrive-sync-btn" onclick="gdriveSync()" style="display:none">☁ Uložit</button>
+  <button class="gdrive-btn" id="gdrive-load-btn" onclick="gdriveLoad()" style="display:none">⬇ Načíst</button>
+  <button class="gdrive-btn" id="gdrive-auto-btn" onclick="gdriveToggleAuto()" style="display:none">⏱ Auto: VYP</button>
+  <button class="gdrive-btn" id="gdrive-disconnect-btn" onclick="gdriveDisconnect()" style="display:none">✕ Odpojit</button>
+  <span class="gdrive-last-sync" id="gdrive-last-sync"></span>
+</div>
+
+<!-- Google Drive setup modal -->
+<div class="gdrive-setup-overlay" id="gdrive-setup-modal">
+  <div class="gdrive-setup-box">
+    <div style="font-family:'Cinzel',serif;font-size:1rem;color:var(--gold);margin-bottom:16px;font-weight:700">🔗 Připojení Google Drive</div>
+    <div class="gdrive-step">
+      <div class="gdrive-step-num">1</div>
+      <div class="gdrive-step-text">Otevři <a href="https://console.cloud.google.com" target="_blank" style="color:var(--gold2)">console.cloud.google.com</a> → vytvoř nový projekt</div>
+    </div>
+    <div class="gdrive-step">
+      <div class="gdrive-step-num">2</div>
+      <div class="gdrive-step-text"><strong>APIs &amp; Services → Library</strong> → vyhledej <code>Google Drive API</code> → <strong>Enable</strong></div>
+    </div>
+    <div class="gdrive-step">
+      <div class="gdrive-step-num">3</div>
+      <div class="gdrive-step-text"><strong>Credentials → Create Credentials → OAuth 2.0 Client ID</strong> → typ: <code>Web application</code> → do Authorized JavaScript origins přidej URL aplikace (např. <code>https://tvoje.github.io</code>)</div>
+    </div>
+    <div class="gdrive-step" style="border:none;margin-bottom:12px">
+      <div class="gdrive-step-num">4</div>
+      <div class="gdrive-step-text">Zkopíruj <strong>Client ID</strong> a vlož sem:</div>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:6px">Google OAuth Client ID</label>
+      <input id="gdrive-client-id-input" class="form-input" placeholder="123456789-abcdef.apps.googleusercontent.com" style="font-family:monospace;font-size:0.82rem">
+      <div style="font-family:'Crimson Pro',serif;font-size:0.78rem;color:var(--text3);margin-top:4px;font-style:italic">Client ID se uloží jen do localStorage tohoto prohlížeče.</div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-outline" onclick="document.getElementById('gdrive-setup-modal').classList.remove('open')">Zrušit</button>
+      <button class="btn btn-gold" onclick="gdriveSetupDone()">✓ Připojit</button>
+    </div>
+  </div>
+</div>
+
+<main>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div style="margin-bottom:24px">
+    <h1 style="font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;color:var(--gold2);text-shadow:0 0 30px rgba(201,149,58,0.3);">Dungeon Master Pomocník</h1>
+    <p style="color:var(--text3);margin-top:4px;font-style:italic;">Jeskyně a Draci · D&D 5e</p>
+  </div>
+  <div class="grid-4" id="dashboard-stats"></div>
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card">
+      <div class="card-header"><div class="card-title">📌 Poznámky sezení</div></div>
+      <textarea class="note-editor" style="min-height:200px" id="session-notes" placeholder="Poznámky k aktuálnímu sezení..." oninput="saveSessionNotes()"></textarea>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">⚡ Rychlý přístup</div></div>
+      <div id="quick-access"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BESTIAR -->
+<div id="page-bestiar" class="page">
+  <div class="card-header" style="margin-bottom:16px">
+    <div class="card-title" style="font-size:1.3rem">🐉 Bestiář</div>
+    <button class="btn btn-gold" onclick="openMonsterModal()">+ Přidat monstrum</button>
+  </div>
+  <div class="search-bar">
+    <input class="search-input" type="text" placeholder="Hledat monstrum..." oninput="filterMonsters(this.value)">
+    <select class="form-select" style="width:160px" onchange="filterMonstersByType(this.value)">
+      <option value="">Všechny typy</option>
+      <option>Humanoid</option><option>Nemrtvý</option><option>Zvíře</option>
+      <option>Netvor</option><option>Démon</option><option>Drak</option>
+      <option>Elementál</option><option>Víla</option><option>Obr</option><option>Jiné</option>
+    </select>
+  </div>
+  <div class="split-view">
+    <div class="list-panel" id="monster-list"></div>
+    <div class="detail-panel" id="monster-detail">
+      <div class="empty-state"><div class="empty-icon">🐉</div><p>Vyber monstrum ze seznamu.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- NPC -->
+<div id="page-npc" class="page">
+  <div class="card-header" style="margin-bottom:16px">
+    <div class="card-title" style="font-size:1.3rem">👤 NPC</div>
+    <button class="btn btn-gold" onclick="openNPCModal()">+ Přidat NPC</button>
+  </div>
+  <div class="search-bar">
+    <input class="search-input" type="text" placeholder="Hledat NPC..." oninput="filterNPCs(this.value)">
+    <select class="form-select" style="width:160px" onchange="filterNPCsByRole(this.value)">
+      <option value="">Všechny role</option>
+      <option>Spojenec</option><option>Nepřítel</option><option>Neutrální</option><option>Obchodník</option><option>Questgiver</option>
+    </select>
+  </div>
+  <div class="split-view">
+    <div class="list-panel" id="npc-list"></div>
+    <div class="detail-panel" id="npc-detail">
+      <div class="empty-state"><div class="empty-icon">👤</div><p>Vyber NPC ze seznamu.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOKACE -->
+<div id="page-lokace" class="page">
+  <div class="card-header" style="margin-bottom:16px">
+    <div class="card-title" style="font-size:1.3rem">🗺️ Lokace</div>
+    <button class="btn btn-gold" onclick="openLocationModal()">+ Přidat lokaci</button>
+  </div>
+  <div class="search-bar">
+    <input class="search-input" type="text" placeholder="Hledat lokaci..." oninput="filterLocations(this.value)">
+    <select class="form-select" style="width:180px" onchange="filterLocationsByType(this.value)">
+      <option value="">Všechny typy</option>
+      <option>Město</option><option>Dungeon</option><option>Příroda</option><option>Hrad</option>
+      <option>Jeskyně</option><option>Hospoda</option><option>Loď</option><option>Zájezdní hostinec</option><option>Jiné</option>
+    </select>
+  </div>
+  <div class="split-view">
+    <div class="list-panel" id="location-list"></div>
+    <div class="detail-panel" id="location-detail">
+      <div class="empty-state"><div class="empty-icon">🗺️</div><p>Vyber lokaci ze seznamu.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- KAMPAN -->
+<div id="page-kampan" class="page">
+  <div class="card-header" style="margin-bottom:16px">
+    <div class="card-title" style="font-size:1.3rem">📜 Kampaň a Sezení</div>
+    <button class="btn btn-gold" onclick="openSessionModal()">+ Nové sezení</button>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">📖 Sezení</div></div>
+        <div id="session-list" class="item-list"></div>
+      </div>
+    </div>
+    <div id="session-detail">
+      <div class="empty-state"><div class="empty-icon">📜</div><p>Vyber sezení ze seznamu.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- BOJOVE POCITADLO -->
+<div id="page-pocitadlo" class="page">
+  <div class="card-header" style="margin-bottom:16px">
+    <div class="card-title" style="font-size:1.3rem">🎲 Bojové počítadlo</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline" onclick="addCombatantModal()">+ Přidat</button>
+      <button class="btn btn-gold" onclick="nextTurn()">Další tah ▶</button>
+      <button class="btn btn-danger btn-sm" onclick="resetCombat()">✕ Reset</button>
+    </div>
+  </div>
+  <div class="turn-indicator">
+    <div style="font-size:1.5rem">⚔️</div>
+    <div>
+      <div class="turn-round" id="turn-label">Na tahu: —</div>
+      <div style="font-size:0.75rem;color:var(--text3)" id="round-label">Kolo 1</div>
+    </div>
+  </div>
+  <div class="grid-2" style="gap:24px">
+    <div>
+      <div class="section-title">Pořadí iniciativy</div>
+      <div id="combatant-list" class="item-list"></div>
+    </div>
+    <div>
+      <!-- DICE ROLLER -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px">🎲 Hod kostkami</div>
+        <div class="form-row" style="margin-bottom:10px;align-items:flex-end">
+          <div class="form-group" style="max-width:80px">
+            <label class="form-label">Počet</label>
+            <input class="form-input" type="number" id="dice-count" value="1" min="1" max="20">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kostka</label>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+              <button class="btn btn-outline btn-sm" onclick="setDice(4)" id="dbtn-4">k4</button>
+              <button class="btn btn-outline btn-sm" onclick="setDice(6)" id="dbtn-6">k6</button>
+              <button class="btn btn-outline btn-sm" onclick="setDice(8)" id="dbtn-8">k8</button>
+              <button class="btn btn-outline btn-sm" onclick="setDice(10)" id="dbtn-10">k10</button>
+              <button class="btn btn-outline btn-sm" onclick="setDice(12)" id="dbtn-12">k12</button>
+              <button class="btn btn-gold btn-sm" onclick="setDice(20)" id="dbtn-20">k20</button>
+              <button class="btn btn-outline btn-sm" onclick="setDice(100)" id="dbtn-100">k%</button>
+            </div>
+          </div>
+          <div class="form-group" style="max-width:90px">
+            <label class="form-label">Bonus ±</label>
+            <input class="form-input" type="number" id="dice-bonus" value="0">
+          </div>
+        </div>
+        <button class="btn btn-gold" style="width:100%;justify-content:center;padding:10px" onclick="rollDice()">🎲 Hodit</button>
+        <div class="dice-result-area" style="margin-top:10px" id="dice-result">
+          <span style="color:var(--text3);font-style:italic;font-size:0.9rem">Klikni Hodit</span>
+        </div>
+        <div id="dice-history-list" style="margin-top:8px;max-height:120px;overflow-y:auto"></div>
+      </div>
+
+      <div class="section-title" style="margin-top:16px">Stavy / Podmínky</div>
+      <div class="card">
+        <div class="conditions" id="condition-reference"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ZASTENA -->
+<div id="page-zastena" class="page">
+  <div class="card-header" style="margin-bottom:16px">
+    <div class="card-title" style="font-size:1.3rem">🛡️ Zástěna DM</div>
+    <button class="btn btn-gold" onclick="saveZastena()">💾 Uložit</button>
+  </div>
+  <div class="zastena-grid" id="zastena-grid">
+    <!-- rendered by JS -->
+  </div>
+</div>
+
+
+<div id="page-kalendar" class="page">
+  <div class="card">
+    <div class="card-title" style="display:flex;align-items:center;justify-content:space-between">
+      <span>📅 Světový Kalendář</span>
+      <button class="btn btn-gold btn-sm" onclick="openKalSettings()">⚙ Nastavit kalendář</button>
+    </div>
+
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <button class="btn" onclick="kalNav(-1)">◀ Předchozí</button>
+      <div style="font-family:'Cinzel',serif;font-size:1rem;color:var(--gold);flex:1;text-align:center" id="kal-title">—</div>
+      <button class="btn" onclick="kalNav(+1)">Další ▶</button>
+      <button class="btn btn-outline btn-sm" onclick="goToToday()">Dnes</button>
+    </div>
+
+    <div id="kal-grid" style="display:grid;gap:2px;margin-bottom:16px"></div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <div style="font-family:'Cinzel',serif;font-size:0.72rem;color:var(--text3)">Vybraný den: <span id="kal-selected-label" style="color:var(--gold)">—</span></div>
+      <button class="btn btn-gold btn-sm" onclick="addKalEvent()">+ Přidat událost</button>
+    </div>
+
+    <div id="kal-events-list" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- MODAL: Nastavení kalendáře -->
+<div class="modal-overlay" id="modal-kal-settings">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-title">⚙ Nastavení světového kalendáře</div>
+    <button class="modal-close" onclick="closeModal('modal-kal-settings')">✕</button>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Název světa / kalendáře</label>
+          <input class="form-input" id="kal-world-name" placeholder="Letopočet Říší, Starbucks Era...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Aktuální rok</label>
+          <input class="form-input" id="kal-current-year" type="number" value="1000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Počet dní v týdnu</label>
+        <input class="form-input" id="kal-days-week" type="number" min="3" max="14" value="7" oninput="updateKalDayNames()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Názvy dní v týdnu (oddělené čárkou)</label>
+        <input class="form-input" id="kal-day-names" placeholder="Pondělí, Úterý, Středa...">
+      </div>
+      <div class="section-title" style="margin-top:16px">Měsíce</div>
+      <div style="font-family:'Crimson Pro',serif;font-size:0.85rem;color:var(--text3);margin-bottom:10px">Přidej měsíce svého světa. Každý má název, počet dní a volitelný popis / svátek.</div>
+      <div id="kal-months-editor" style="display:flex;flex-direction:column;gap:6px"></div>
+      <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="addKalMonth()">+ Přidat měsíc</button>
+      <div class="section-title" style="margin-top:16px">Zvláštní dny / Svátky (globální)</div>
+      <div id="kal-holidays-editor" style="display:flex;flex-direction:column;gap:6px"></div>
+      <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="addKalHoliday()">+ Přidat svátek</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-kal-settings')">Zrušit</button>
+      <button class="btn btn-gold" onclick="saveKalSettings()">💾 Uložit nastavení</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Přidat událost -->
+<div class="modal-overlay" id="modal-kal-event">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title">📅 Událost / Poznámka</div>
+    <button class="modal-close" onclick="closeModal('modal-kal-event')">✕</button>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Název události *</label>
+        <input class="form-input" id="kev-name" placeholder="Narozeniny krále, Útok na vesnici...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Den</label>
+          <input class="form-input" id="kev-day" type="number" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Měsíc</label>
+          <select class="form-select" id="kev-month"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rok</label>
+          <input class="form-input" id="kev-year" type="number">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Typ</label>
+        <select class="form-select" id="kev-type">
+          <option value="event">📌 Herní událost</option>
+          <option value="holiday">🎉 Svátek / Slavnost</option>
+          <option value="session">🎲 Sezení</option>
+          <option value="note">📝 Poznámka</option>
+          <option value="quest">⚔ Quest / Mise</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Popis</label>
+        <textarea class="form-textarea" id="kev-desc" style="min-height:80px" placeholder="Detaily události..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-kal-event')">Zrušit</button>
+      <button class="btn btn-gold" onclick="saveKalEvent()">💾 Uložit</button>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- MODAL: Monstrum -->
+<div class="modal-overlay" id="modal-monster">
+  <div class="modal" style="max-width:820px">
+    <div class="modal-title" id="monster-modal-title">🐉 Přidat monstrum</div><div class="modal-body">
+    <button class="modal-close" onclick="closeModal('modal-monster')">✕</button>
+
+    <!-- Image upload -->
+    <div class="form-group">
+      <label class="form-label">Obrázek monstrum</label>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div id="m-img-preview" style="width:100px;height:100px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:2rem;flex-shrink:0;">🐉</div>
+        <div style="flex:1">
+          <div class="img-upload-area" onclick="document.getElementById('m-img-file').click()">
+            <div>📁 Klikni pro nahrání obrázku</div>
+            <p>PNG, JPG, WebP</p>
+          </div>
+          <input type="file" id="m-img-file" accept="image/*" style="display:none" onchange="previewImage('m-img-file','m-img-preview','m-img-data')">
+          <input type="hidden" id="m-img-data">
+          <button class="btn btn-danger btn-sm" style="margin-top:6px" onclick="clearImage('m-img-preview','m-img-data','🐉')">✕ Odebrat obrázek</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="form-group"><label class="form-label">Název</label><input class="form-input" id="m-name" placeholder="Goblin"/></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Typ</label>
+            <select class="form-select" id="m-type">
+              <option>Humanoid</option><option>Nemrtvý</option><option>Zvíře</option>
+              <option>Netvor</option><option>Démon</option><option>Drak</option>
+              <option>Elementál</option><option>Víla</option><option>Obr</option><option>Jiné</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Výzva (NB)</label><input class="form-input" id="m-cr" placeholder="1/4"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">OČ</label><input class="form-input" id="m-ac" type="number" placeholder="13"/></div>
+          <div class="form-group"><label class="form-label">Životy (kostky)</label><input class="form-input" id="m-hp" placeholder="2k6+2"/></div>
+          <div class="form-group"><label class="form-label">ŽB průměr</label><input class="form-input" id="m-hpavg" type="number" placeholder="9"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Rychlost</label><input class="form-input" id="m-speed" placeholder="9 m (30 stop)"/></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Velikost</label>
+            <select class="form-select" id="m-size">
+              <option>Drobný</option><option>Malý</option><option>Střední</option><option>Velký</option><option>Obrovský</option><option>Gigantický</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Přesouvací bonus</label>
+            <div style="display:flex;gap:6px;align-items:center">
+              <input class="form-input" id="m-pb" type="number" placeholder="2"/>
+              <button class="btn btn-outline btn-sm" onclick="autoPB('m-cr','m-pb')" title="Automaticky z NB">🔄</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title" style="margin-top:0">Vlastnosti</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+          <div class="form-group"><label class="form-label">SÍL</label><input class="form-input" id="m-str" type="number" placeholder="8" oninput="autoMod('m-str','m-str-mod')"/></div>
+          <div class="form-group"><label class="form-label">OBR</label><input class="form-input" id="m-dex" type="number" placeholder="14" oninput="autoMod('m-dex','m-dex-mod')"/></div>
+          <div class="form-group"><label class="form-label">ODO</label><input class="form-input" id="m-con" type="number" placeholder="10" oninput="autoMod('m-con','m-con-mod')"/></div>
+          <div class="form-group"><label class="form-label">INT</label><input class="form-input" id="m-int" type="number" placeholder="10" oninput="autoMod('m-int','m-int-mod')"/></div>
+          <div class="form-group"><label class="form-label">MOU</label><input class="form-input" id="m-wis" type="number" placeholder="8" oninput="autoMod('m-wis','m-wis-mod')"/></div>
+          <div class="form-group"><label class="form-label">CHA</label><input class="form-input" id="m-cha" type="number" placeholder="8" oninput="autoMod('m-cha','m-cha-mod')"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="m-str-mod">—</div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="m-dex-mod">—</div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="m-con-mod">—</div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="m-int-mod">—</div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="m-wis-mod">—</div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="m-cha-mod">—</div>
+        </div>
+        <div class="form-group"><label class="form-label">Smysly</label><input class="form-input" id="m-senses" placeholder="Vidění ve tmě 18 m, Pasivní vnímání 9"/></div>
+        <div class="form-group"><label class="form-label">Jazyky</label><input class="form-input" id="m-languages" placeholder="Goblinština, Obecná řeč"/></div>
+        <div class="form-group"><label class="form-label">Imunity / odolnosti</label><input class="form-input" id="m-immunities" placeholder="Imunita na otravu"/></div>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Schopnosti</label><textarea class="form-textarea" id="m-traits" placeholder="Hbitý útěk: Může Odpočinout nebo Ustoupit jako bonusovou akci."></textarea></div>
+    <div class="form-group"><label class="form-label">Akce</label><textarea class="form-textarea" id="m-actions" placeholder="Scimitar. Útok zbraní na blízko: +4 k zásahu, dosah 1,5 m... Zranění: 5 (1k6+2) sečné zranění."></textarea></div>
+    <div class="form-group"><label class="form-label">Bonusové akce / Reakce / Legendární akce</label><textarea class="form-textarea" id="m-bonus"></textarea></div>
+    <div class="form-group"><label class="form-label">Poznámky DM</label><textarea class="form-textarea" id="m-notes"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-monster')">Zrušit</button>
+      <button class="btn btn-gold" onclick="saveMonster()">💾 Uložit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NPC -->
+<div class="modal-overlay" id="modal-npc">
+  <div class="modal" style="max-width:820px">
+    <div class="modal-title" id="npc-modal-title">👤 Přidat NPC</div><div class="modal-body">
+    <button class="modal-close" onclick="closeModal('modal-npc')">✕</button>
+
+    <!-- Image -->
+    <div class="form-group">
+      <label class="form-label">Obrázek NPC</label>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div id="n-img-preview" style="width:100px;height:100px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:2rem;flex-shrink:0;">👤</div>
+        <div style="flex:1">
+          <div class="img-upload-area" onclick="document.getElementById('n-img-file').click()">
+            <div>📁 Klikni pro nahrání obrázku</div><p>PNG, JPG, WebP</p>
+          </div>
+          <input type="file" id="n-img-file" accept="image/*" style="display:none" onchange="previewImage('n-img-file','n-img-preview','n-img-data')">
+          <input type="hidden" id="n-img-data">
+          <button class="btn btn-danger btn-sm" style="margin-top:6px" onclick="clearImage('n-img-preview','n-img-data','👤')">✕ Odebrat obrázek</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="form-group"><label class="form-label">Jméno</label><input class="form-input" id="n-name"/></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Role</label>
+            <select class="form-select" id="n-role">
+              <option>Spojenec</option><option>Nepřítel</option><option>Neutrální</option><option>Obchodník</option><option>Questgiver</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Rasa</label><input class="form-input" id="n-race" placeholder="Člověk"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Povolání / Funkce</label><input class="form-input" id="n-class" placeholder="Hospodský, Čaroděj..."/></div>
+        <div class="form-group"><label class="form-label">Lokace</label><input class="form-input" id="n-location" placeholder="Kde ho hráči najdou"/></div>
+        <div class="form-group"><label class="form-label">Vzhled</label><textarea class="form-textarea" id="n-appearance" style="min-height:70px" placeholder="Fyzický popis..."></textarea></div>
+      </div>
+      <div>
+        <!-- VLASTNOSTI NPC -->
+        <div class="section-title" style="margin-top:0">Vlastnosti (volitelné)</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+          <div class="form-group"><label class="form-label">SÍL</label><input class="form-input" id="n-str" type="number" placeholder="10" oninput="autoMod('n-str','n-str-mod')"/></div>
+          <div class="form-group"><label class="form-label">OBR</label><input class="form-input" id="n-dex" type="number" placeholder="10" oninput="autoMod('n-dex','n-dex-mod')"/></div>
+          <div class="form-group"><label class="form-label">ODO</label><input class="form-input" id="n-con" type="number" placeholder="10" oninput="autoMod('n-con','n-con-mod')"/></div>
+          <div class="form-group"><label class="form-label">INT</label><input class="form-input" id="n-int" type="number" placeholder="10" oninput="autoMod('n-int','n-int-mod')"/></div>
+          <div class="form-group"><label class="form-label">MOU</label><input class="form-input" id="n-wis" type="number" placeholder="10" oninput="autoMod('n-wis','n-wis-mod')"/></div>
+          <div class="form-group"><label class="form-label">CHA</label><input class="form-input" id="n-cha" type="number" placeholder="10" oninput="autoMod('n-cha','n-cha-mod')"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="n-str-mod">—</div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="n-dex-mod">—</div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="n-con-mod">—</div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="n-int-mod">—</div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="n-wis-mod">—</div>
+          <div style="text-align:center;font-size:0.8rem;color:var(--gold2)" id="n-cha-mod">—</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">OČ</label><input class="form-input" id="n-ac" type="number" placeholder="10"/></div>
+          <div class="form-group"><label class="form-label">ŽB</label><input class="form-input" id="n-hp" placeholder="10"/></div>
+          <div class="form-group">
+            <label class="form-label">Př. bonus</label>
+            <div style="display:flex;gap:6px">
+              <input class="form-input" id="n-pb" type="number" placeholder="2"/>
+              <button class="btn btn-outline btn-sm" onclick="autoPBNPC()" title="Auto z úrovně">🔄</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Motivace</label><textarea class="form-textarea" id="n-motivation" style="min-height:70px" placeholder="Co chce, co se bojí..."></textarea></div>
+    <div class="form-group"><label class="form-label">Dialogy / klíčové fráze</label><textarea class="form-textarea" id="n-dialogs" placeholder="„Přátelé! Co vás sem přivádí?""></textarea></div>
+    <div class="form-group"><label class="form-label">Tajemství / zákulisí</label><textarea class="form-textarea" id="n-secrets" placeholder="Co hráči nevědí..."></textarea></div>
+    <div class="form-group"><label class="form-label">Poznámky</label><textarea class="form-textarea" id="n-notes" style="min-height:60px"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-npc')">Zrušit</button>
+      <button class="btn btn-gold" onclick="saveNPC()">💾 Uložit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Lokace -->
+<div class="modal-overlay" id="modal-location">
+  <div class="modal" style="max-width:820px">
+    <div class="modal-title" id="location-modal-title">🗺️ Přidat lokaci</div><div class="modal-body">
+    <button class="modal-close" onclick="closeModal('modal-location')">✕</button>
+
+    <!-- Map upload -->
+    <div class="form-group">
+      <label class="form-label">Mapa lokace</label>
+      <div class="img-upload-area" onclick="document.getElementById('l-map-file').click()" id="l-map-dropzone">
+        <div>🗺️ Klikni pro nahrání mapy</div>
+        <p>PNG, JPG, WebP – libovolná velikost</p>
+      </div>
+      <input type="file" id="l-map-file" accept="image/*" style="display:none" onchange="previewMap(event)">
+      <input type="hidden" id="l-map-data">
+      <div id="l-map-preview" style="margin-top:8px"></div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="form-group"><label class="form-label">Název</label><input class="form-input" id="l-name"/></div>
+        <div class="form-group"><label class="form-label">Typ</label>
+          <select class="form-select" id="l-type">
+            <option>Město</option><option>Dungeon</option><option>Příroda</option><option>Hrad</option>
+            <option>Jeskyně</option><option>Hospoda</option><option>Loď</option><option>Zájezdní hostinec</option><option>Jiné</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Spojena s (lokace)</label><input class="form-input" id="l-connected" placeholder="Jiné lokace, cesty..."/></div>
+        <div class="form-group"><label class="form-label">NPC v lokaci</label><input class="form-input" id="l-npcs" placeholder="Jména NPC oddělená čárkou"/></div>
+        <div class="form-group"><label class="form-label">Monstra v lokaci</label><input class="form-input" id="l-monsters" placeholder="2× Goblin, 1× Hobgoblin..."/></div>
+      </div>
+      <div>
+        <div class="form-group"><label class="form-label">Atmosféra / popis pro hráče</label><textarea class="form-textarea" id="l-atmosphere" style="min-height:100px" placeholder="Vzduch páchne vlhkou zemí..."></textarea></div>
+        <div class="form-group"><label class="form-label">Poklady / odměny</label><textarea class="form-textarea" id="l-treasure" style="min-height:70px" placeholder="50 zlatých, +1 dýka..."></textarea></div>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Detailní popis (pro DM)</label><textarea class="form-textarea" id="l-description" placeholder="Popis místností, pastí, pokladů..."></textarea></div>
+    <div class="form-group"><label class="form-label">Poznámky</label><textarea class="form-textarea" id="l-notes" style="min-height:60px"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-location')">Zrušit</button>
+      <button class="btn btn-gold" onclick="saveLocation()">💾 Uložit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Sezení -->
+<div class="modal-overlay" id="modal-session">
+  <div class="modal">
+    <div class="modal-title" id="session-modal-title">📜 Nové sezení</div><div class="modal-body">
+    <button class="modal-close" onclick="closeModal('modal-session')">✕</button>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Název sezení</label><input class="form-input" id="s-name" placeholder="Sezení 1 – Začátek dobrodružství"/></div>
+      <div class="form-group" style="max-width:150px"><label class="form-label">Datum</label><input class="form-input" id="s-date" type="date"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Příprava / plán</label><textarea class="form-textarea" id="s-plan"></textarea></div>
+    <div class="form-group"><label class="form-label">Shrnutí (po sezení)</label><textarea class="form-textarea" id="s-summary"></textarea></div>
+    <div class="form-group"><label class="form-label">Cliffhanger / příští sezení</label><textarea class="form-textarea" id="s-cliffhanger" style="min-height:70px"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-session')">Zrušit</button>
+      <button class="btn btn-gold" onclick="saveSession()">💾 Uložit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Combatant -->
+<div class="modal-overlay" id="modal-combatant">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-title">⚔️ Přidat účastníka boje</div>
+    <button class="modal-close" onclick="closeModal('modal-combatant')">✕</button>
+    <div style="margin-bottom:12px">
+      <label class="form-label">Vybrat z bestiáře:</label>
+      <select class="form-select" id="c-from-bestiary" onchange="fillFromBestiary(this.value)">
+        <option value="">— vybrat monstrum —</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Jméno</label><input class="form-input" id="c-name"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Typ</label>
+        <select class="form-select" id="c-type">
+          <option value="player">Hráč</option><option value="enemy">Nepřítel</option><option value="neutral">Neutrální</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Iniciativa</label><input class="form-input" id="c-init" type="number" placeholder="15"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Max ŽB</label><input class="form-input" id="c-hp-max" type="number" placeholder="20"/></div>
+      <div class="form-group"><label class="form-label">OČ</label><input class="form-input" id="c-ac" type="number" placeholder="13"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-combatant')">Zrušit</button>
+      <button class="btn btn-gold" onclick="addCombatant()">+ Přidat</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMAGE ZOOM MODAL -->
+<div class="modal-overlay" id="modal-imgzoom" onclick="closeModal('modal-imgzoom')">
+  <div style="max-width:90vw;max-height:90vh;cursor:zoom-out">
+    <img id="zoom-img" src="" style="max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px;border:2px solid var(--border2)">
+  </div>
+</div>
+
+<!-- SINGLE RECORD IMPORT MODAL -->
+<div id="simp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1200;justify-content:center;align-items:center;padding:20px">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;width:min(420px,95vw);overflow:hidden">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <div style="font-family:'Cinzel',serif;color:var(--gold2);font-size:1rem">⬇ Import záznamu</div>
+      <button onclick="document.getElementById('simp-modal').style.display='none'" style="background:none;border:none;color:var(--text3);font-size:1.2rem;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:16px 20px;display:flex;flex-direction:column;gap:14px">
+      <div id="simp-info" style="background:rgba(139,105,20,.1);border:1px solid rgba(139,105,20,.25);border-radius:4px;padding:12px;font-size:.88rem;line-height:1.6"></div>
+      <div style="font-size:.82rem;color:var(--text3)">Jak chceš záznam importovat?</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid var(--border);border-radius:4px;cursor:pointer">
+          <input type="radio" name="simp-strat" value="add" checked style="margin-top:3px">
+          <div>
+            <strong>Přidat jako nový</strong> <span style="background:rgba(30,180,100,.15);color:#4caf7d;font-size:.72rem;padding:1px 6px;border-radius:3px">✓ Doporučeno</span><br>
+            <small style="color:var(--text3)">Záznam se přidá vedle stávajících dat.</small>
+          </div>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid var(--border);border-radius:4px;cursor:pointer">
+          <input type="radio" name="simp-strat" value="replace" style="margin-top:3px">
+          <div>
+            <strong>Nahradit existující</strong><br>
+            <small style="color:var(--text3)">Najde záznam se stejným jménem a přepíše ho.</small>
+          </div>
+        </label>
+      </div>
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px">
+      <button class="btn btn-outline" onclick="document.getElementById('simp-modal').style.display='none'">Zrušit</button>
+      <button class="btn btn-gold" onclick="doSingleImport(document.querySelector('input[name=simp-strat]:checked').value)">✓ Importovat</button>
+    </div>
+  </div>
+</div>
+
+<div class="flash" id="flash-msg"></div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+let data = {
+  monsters:[], npcs:[], locations:[], sessions:[],
+  sessionNotes:'',
+  combat:{combatants:[],currentIndex:0,round:1},
+  kalendar:{
+    worldName:'Svět kampaně',
+    currentYear:1000,
+    daysPerWeek:7,
+    dayNames:['Pondělí','Úterý','Středa','Čtvrtek','Pátek','Sobota','Neděle'],
+    months:[
+      {name:'Leden',days:30,desc:'Zimní měsíc'},
+      {name:'Únor',days:28,desc:''},
+      {name:'Březen',days:30,desc:'Začátek jara'},
+      {name:'Duben',days:30,desc:''},
+      {name:'Květen',days:31,desc:''},
+      {name:'Červen',days:30,desc:'Letní slunovrat'},
+      {name:'Červenec',days:31,desc:''},
+      {name:'Srpen',days:31,desc:''},
+      {name:'Září',days:30,desc:'Začátek podzimu'},
+      {name:'Říjen',days:30,desc:''},
+      {name:'Listopad',days:30,desc:''},
+      {name:'Prosinec',days:31,desc:'Zimní slunovrat'},
+    ],
+    holidays:[],
+    events:[],
+    today:{year:1000,month:0,day:1},
+    view:{year:1000,month:0},
+    selected:null,
+  },
+  zastena:{
+    panels:[
+      {title:'📌 Aktuální scéna',content:''},
+      {title:'🎯 Cíle sezení',content:''},
+      {title:'⚡ Rychlé reference',content:'Pasivní vnímání hráčů:\nAC hráčů:\nInitiativa hráčů:'},
+      {title:'🏆 Odměny / XP',content:''},
+      {title:'📖 Důležité NPCnotes',content:''},
+      {title:'🗺️ Aktuální lokace',content:''},
+    ]
+  }
+};
+
+let editingId={monster:null,npc:null,location:null,session:null};
+let selectedDice=20;
+let diceHistory=[];
+
+function loadData(){
+  try {
+    const s = localStorage.getItem('dm-helper-v2');
+    if(s) data = Object.assign({}, data, JSON.parse(s));
+    
+    // Načti obrázky zpět
+    (data.monsters||[]).forEach(function(m){
+      if(m.image==='__IMG__'){
+        const img=localStorage.getItem('dm-img-m_'+m.id);
+        m.image=img||'';
+      }
+    });
+    (data.npcs||[]).forEach(function(n){
+      if(n.image==='__IMG__'){
+        const img=localStorage.getItem('dm-img-n_'+n.id);
+        n.image=img||'';
+      }
+    });
+    (data.locations||[]).forEach(function(l){
+      if(l.image==='__IMG__'){
+        const img=localStorage.getItem('dm-img-l_'+l.id);
+        l.image=img||'';
+      }
+    });
+  } catch(e) {
+    console.error('loadData error:', e);
+  }
+}
+function saveData(){
+  try {
+    // Oddělíme obrázky do vlastního klíče - jsou velké a plní quota
+    const images = {};
+    const dataNoImg = JSON.parse(JSON.stringify(data));
+    
+    // Vyjmi obrázky z monsters
+    (dataNoImg.monsters||[]).forEach(function(m,i){
+      if(m.image){images['m_'+m.id]=m.image; dataNoImg.monsters[i].image='__IMG__';}
+    });
+    // Vyjmi obrázky z npcs
+    (dataNoImg.npcs||[]).forEach(function(n,i){
+      if(n.image){images['n_'+n.id]=n.image; dataNoImg.npcs[i].image='__IMG__';}
+    });
+    // Vyjmi obrázky z locations
+    (dataNoImg.locations||[]).forEach(function(l,i){
+      if(l.image){images['l_'+l.id]=l.image; dataNoImg.locations[i].image='__IMG__';}
+    });
+    
+    localStorage.setItem('dm-helper-v2', JSON.stringify(dataNoImg));
+    
+    // Ukládej obrázky jednotlivě - pokud jeden selže, nevadí
+    Object.keys(images).forEach(function(k){
+      try { localStorage.setItem('dm-img-'+k, images[k]); }
+      catch(e) { console.warn('Obrázek nelze uložit:', k); }
+    });
+  } catch(e) {
+    // Záchrana: zkus uložit bez obrázků vůbec
+    try {
+      const minimal = JSON.parse(JSON.stringify(data));
+      (minimal.monsters||[]).forEach(function(m){m.image='';});
+      (minimal.npcs||[]).forEach(function(n){n.image='';});
+      (minimal.locations||[]).forEach(function(l){l.image='';});
+      localStorage.setItem('dm-helper-v2', JSON.stringify(minimal));
+      flash('Uloženo (obrázky vynechány - plná úložiště)', 'orange');
+    } catch(e2) {
+      flash('Chyba ukládání: ' + e2.message, 'red');
+    }
+  }
+}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+
+// ─── NAV ─────────────────────────────────────────────────────────────────────
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  const renders={dashboard:renderDashboard,bestiar:renderMonsters,npc:renderNPCs,lokace:renderLocations,kampan:renderSessions,pocitadlo:renderCombat,zastena:renderZastena,kalendar:renderKalendar};
+  if(renders[name])renders[name]();
+}
+function openModal(id){
+  var el=document.getElementById(id);
+  if(!el){console.error('Modal not found:',id);return;}
+  el.style.display='flex';
+  el.classList.add('open');
+}
+function closeModal(id){
+  var el=document.getElementById(id);
+  if(!el){console.error('Modal not found:',id);return;}
+  el.classList.remove('open');
+  el.style.display='none';
+}
+
+function flash(msg,type='green'){
+  const el=document.getElementById('flash-msg');
+  el.textContent=msg;
+  el.style.borderColor=type==='red'?'var(--red3)':'var(--green2)';
+  el.style.color=type==='red'?'var(--red3)':'var(--green2)';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// ─── MOD / PB HELPERS ────────────────────────────────────────────────────────
+function modNum(val){return Math.floor(((parseInt(val)||10)-10)/2);}
+function modStr(val){const m=modNum(val);return(m>=0?'+':'')+m;}
+function autoMod(inputId,displayId){
+  const v=document.getElementById(inputId)?.value;
+  const el=document.getElementById(displayId);
+  if(el)el.textContent=v?modStr(v):'—';
+}
+function autoPB(crId,pbId){
+  const cr=document.getElementById(crId)?.value;
+  const pb=crToPB(cr);
+  const el=document.getElementById(pbId);
+  if(el)el.value=pb;
+}
+function autoPBNPC(){
+  // NPC usually level-based; use a simple prompt
+  const level=prompt('Úroveň NPC (pro výpočet přesouvacího bonusu):');
+  if(!level)return;
+  const l=parseInt(level)||1;
+  const pb=l<=4?2:l<=8?3:l<=12?4:l<=16?5:6;
+  document.getElementById('n-pb').value=pb;
+}
+function crToPB(cr){
+  if(!cr)return 2;
+  const map={'0':2,'1/8':2,'1/4':2,'1/2':2,'1':2,'2':2,'3':2,'4':2,'5':3,'6':3,'7':3,'8':3,'9':4,'10':4,'11':4,'12':4,'13':5,'14':5,'15':5,'16':5,'17':6,'18':6,'19':6,'20':6,'21':7,'22':7,'23':7,'24':7,'25':8,'26':8,'27':8,'28':8,'29':9,'30':9};
+  return map[cr]||2;
+}
+
+// ─── IMAGE HELPERS ────────────────────────────────────────────────────────────
+function previewImage(fileId,previewId,dataId){
+  const file=document.getElementById(fileId)?.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const prev=document.getElementById(previewId);
+    if(prev){prev.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">`;}
+    const d=document.getElementById(dataId);
+    if(d)d.value=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function clearImage(previewId,dataId,emoji){
+  const prev=document.getElementById(previewId);
+  if(prev)prev.innerHTML=emoji;
+  const d=document.getElementById(dataId);
+  if(d)d.value='';
+}
+function previewMap(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    document.getElementById('l-map-data').value=ev.target.result;
+    document.getElementById('l-map-preview').innerHTML=`
+      <div style="position:relative">
+        <img src="${ev.target.result}" style="width:100%;max-height:200px;object-fit:cover;border-radius:4px;border:1px solid var(--border)">
+        <button class="btn btn-danger btn-sm" style="position:absolute;top:6px;right:6px" onclick="clearMap()">✕ Odebrat mapu</button>
+      </div>`;
+    document.getElementById('l-map-dropzone').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+function clearMap(){
+  document.getElementById('l-map-data').value='';
+  document.getElementById('l-map-preview').innerHTML='';
+  document.getElementById('l-map-dropzone').style.display='';
+}
+function zoomImage(src){
+  document.getElementById('zoom-img').src=src;
+  openModal('modal-imgzoom');
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function renderStorageInfo(){
+  var used = getStorageUsage();
+  var pct = Math.min(100, Math.round(used/5120*100));
+  var color = pct>80?'var(--red2)':pct>60?'var(--gold2)':'var(--green2)';
+  var el = document.getElementById('storage-info');
+  if(el) el.innerHTML = 'Úložiště: <span style="color:'+color+';font-weight:700">'+used+' KB / ~5120 KB ('+pct+'%)</span>'
+    + (pct>70?' &nbsp;<button class="btn btn-sm" style="padding:2px 8px;font-size:0.65rem" onclick="freeStorage()">🗑 Uvolnit</button>':'');
+}
+function renderDashboard(){
+  const stats=[
+    {label:'Monstra',val:data.monsters.length,icon:'🐉',page:'bestiar'},
+    {label:'NPC',val:data.npcs.length,icon:'👤',page:'npc'},
+    {label:'Lokace',val:data.locations.length,icon:'🗺️',page:'lokace'},
+    {label:'Sezení',val:data.sessions.length,icon:'📜',page:'kampan'}
+  ];
+  document.getElementById('dashboard-stats').innerHTML=stats.map(s=>`
+    <div class="card" style="cursor:pointer;text-align:center" onclick="goPage('${s.page}')">
+      <div style="font-size:2rem;margin-bottom:8px">${s.icon}</div>
+      <div style="font-family:'Cinzel',serif;font-size:2rem;font-weight:900;color:var(--gold2)">${s.val}</div>
+      <div style="color:var(--text3);font-size:0.85rem;margin-top:4px">${s.label}</div>
+    </div>`).join('');
+  const notes=document.getElementById('session-notes');
+  if(notes)notes.value=data.sessionNotes||'';
+  const quick=document.getElementById('quick-access');
+  const rm=data.monsters.slice(-3).reverse();
+  const rn=data.npcs.slice(-3).reverse();
+  quick.innerHTML=`
+    <div class="section-title" style="margin-top:0">Poslední monstra</div>
+    ${rm.length?rm.map(m=>`<div class="item-card" style="margin-bottom:6px" onclick="goPage('bestiar');setTimeout(()=>showMonsterDetail('${m.id}'),100)"><span class="item-name">${m.name}</span><span class="badge badge-gray">NB ${m.cr||'?'}</span></div>`).join(''):'<p style="color:var(--text3);font-style:italic;font-size:0.85rem">Žádná monstra</p>'}
+    <div class="section-title">Poslední NPC</div>
+    ${rn.length?rn.map(n=>`<div class="item-card" style="margin-bottom:6px" onclick="goPage('npc');setTimeout(()=>showNPCDetail('${n.id}'),100)"><span class="item-name">${n.name}</span><span class="badge ${roleBadge(n.role)}">${n.role}</span></div>`).join(''):'<p style="color:var(--text3);font-style:italic;font-size:0.85rem">Žádná NPC</p>'}
+  `;
+  renderStorageInfo();
+}
+function goPage(name){
+  const tabs=document.querySelectorAll('.nav-tab');
+  const map={dashboard:0,bestiar:1,npc:2,lokace:3,kampan:4,pocitadlo:5,zastena:6};
+  showPage(name,tabs[map[name]]);
+}
+function saveSessionNotes(){data.sessionNotes=document.getElementById('session-notes').value;saveData();}
+
+// ─── MONSTERS ─────────────────────────────────────────────────────────────────
+let monsterFilter='',monsterTypeFilter='';
+function filterMonsters(q){monsterFilter=q.toLowerCase();renderMonsters();}
+function filterMonstersByType(t){monsterTypeFilter=t;renderMonsters();}
+
+function openMonsterModal(id=null){
+  editingId.monster=id;
+  const m=id?data.monsters.find(x=>x.id===id):null;
+  document.getElementById('monster-modal-title').textContent=id?'🐉 Upravit monstrum':'🐉 Přidat monstrum';
+  const fields=['name','type','cr','ac','hp','hpavg','speed','size','pb','str','dex','con','int','wis','cha','senses','languages','immunities','traits','actions','bonus','notes'];
+  fields.forEach(f=>{const el=document.getElementById('m-'+f);if(el)el.value=m?(m[f]||''):'';});
+  // mods
+  ['str','dex','con','int','wis','cha'].forEach(a=>autoMod('m-'+a,'m-'+a+'-mod'));
+  // image
+  const prev=document.getElementById('m-img-preview');
+  if(prev)prev.innerHTML=m&&m.image?`<img src="${m.image}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">`:' 🐉';
+  const imgd=document.getElementById('m-img-data');
+  if(imgd)imgd.value=m&&m.image?m.image:'';
+  if(!m)document.getElementById('m-size').value='Střední';
+  openModal('modal-monster');
+}
+
+function saveMonster(){
+  const name=document.getElementById('m-name').value.trim();
+  if(!name){flash('Zadej název!','red');return;}
+  const obj={id:editingId.monster||uid(),name};
+  ['type','cr','ac','hp','hpavg','speed','size','pb','str','dex','con','int','wis','cha','senses','languages','immunities','traits','actions','bonus','notes'].forEach(f=>{
+    const el=document.getElementById('m-'+f);if(el)obj[f]=el.value;
+  });
+  obj.image=document.getElementById('m-img-data')?.value||'';
+  if(editingId.monster){const i=data.monsters.findIndex(x=>x.id===editingId.monster);data.monsters[i]=obj;}
+  else data.monsters.push(obj);
+  saveData();closeModal('modal-monster');renderMonsters();flash('Monstrum uloženo ✓');
+}
+
+function renderMonsters(){
+  let list=data.monsters.filter(m=>m.name.toLowerCase().includes(monsterFilter)&&(!monsterTypeFilter||m.type===monsterTypeFilter));
+  const el=document.getElementById('monster-list');
+  if(!list.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">🐉</div><p>Žádná monstra</p><button class="btn btn-gold" onclick="openMonsterModal()">+ Přidat monstrum</button></div>';return;}
+  el.innerHTML=list.map(m=>`
+    <div class="item-card" onclick="showMonsterDetail('${m.id}')" id="mcard-${m.id}">
+      ${m.image?`<img class="entity-img-small" src="${m.image}" onclick="event.stopPropagation();zoomImage('${m.image.replace(/'/g,'\\\'')}')">`:'<div style="width:48px;height:48px;background:var(--bg4);border:1px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🐉</div>'}
+      <div style="flex:1;min-width:0">
+        <div class="item-name">${m.name}</div>
+        <div class="item-meta">${m.type||'Netvor'} · NB ${m.cr||'?'}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <span class="badge badge-red">OČ ${m.ac||'?'}</span>
+        <span class="badge badge-gray">ŽB ${m.hpavg||'?'}</span>
+      </div>
+    </div>`).join('');
+}
+
+function showMonsterDetail(id){
+  const m=data.monsters.find(x=>x.id===id);if(!m)return;
+  document.querySelectorAll('#monster-list .item-card').forEach(c=>c.classList.remove('selected'));
+  const card=document.getElementById('mcard-'+id);if(card)card.classList.add('selected');
+  document.getElementById('monster-detail').innerHTML=`
+    ${m.image?`<div style="margin-bottom:12px"><img src="${m.image}" style="width:100%;max-height:260px;object-fit:cover;border-radius:6px;border:1px solid var(--border);cursor:zoom-in" onclick="zoomImage('${m.image.replace(/'/g,'\\\'')}')"></div>`:''}
+    <div class="stat-block">
+      <h2>${m.name}</h2>
+      <div class="stat-type">${m.size||'Střední'} ${m.type||'Netvor'}</div>
+      <hr class="stat-divider">
+      <div class="stat-property"><strong>Obranné číslo:</strong> ${m.ac||'—'}</div>
+      <div class="stat-property"><strong>Životy:</strong> ${m.hpavg||'—'} ${m.hp?'('+m.hp+')':''}</div>
+      <div class="stat-property"><strong>Rychlost:</strong> ${m.speed||'—'}</div>
+      <hr class="stat-divider">
+      <div class="stats-grid">
+        ${[['SÍL',m.str],['OBR',m.dex],['ODL',m.con],['INT',m.int],['MDR',m.wis],['CHA',m.cha]].map(([n,v])=>`
+          <div class="stat-box"><div class="stat-name">${n}</div><div class="stat-val">${v||10}</div><div class="stat-mod">${modStr(v||10)}</div></div>`).join('')}
+      </div>
+      <hr class="stat-divider">
+      ${m.senses?`<div class="stat-property"><strong>Smysly:</strong> ${m.senses}</div>`:''}
+      ${m.languages?`<div class="stat-property"><strong>Jazyky:</strong> ${m.languages}</div>`:''}
+      ${m.immunities?`<div class="stat-property"><strong>Imunity:</strong> ${m.immunities}</div>`:''}
+      <div class="stat-property"><strong>Nebezpečnost:</strong> ${m.cr||'—'} · Přesouvací bonus: +${m.pb||crToPB(m.cr)}</div>
+      ${m.traits?`<hr class="stat-divider"><div style="margin-bottom:4px"><strong>Schopnosti</strong></div><div style="white-space:pre-wrap;font-size:0.88rem">${m.traits}</div>`:''}
+      ${m.actions?`<hr class="stat-divider"><div style="margin-bottom:4px"><strong>Akce</strong></div><div style="white-space:pre-wrap;font-size:0.88rem">${m.actions}</div>`:''}
+      ${m.bonus?`<hr class="stat-divider"><div style="margin-bottom:4px"><strong>Bonusové akce / Reakce</strong></div><div style="white-space:pre-wrap;font-size:0.88rem">${m.bonus}</div>`:''}
+    </div>
+    ${m.notes?`<div class="card" style="margin-top:12px"><div style="font-family:'Cinzel',serif;font-size:0.78rem;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em">Poznámky DM</div><div style="white-space:pre-wrap;color:var(--text2)">${m.notes}</div></div>`:''}
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn btn-outline btn-sm" onclick="openMonsterModal('${m.id}')">✏️ Upravit</button>
+      <button class="btn btn-outline btn-sm" onclick="addMonsterToCombat('${m.id}')">⚔️ Přidat do boje</button>
+      <button class="btn btn-outline btn-sm" onclick="exportRecord('monster','${m.id}')">⬇ Export</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteMonster('${m.id}')">🗑 Smazat</button>
+    </div>`;
+}
+
+function deleteMonster(id){
+  if(!confirm('Opravdu smazat?'))return;
+  data.monsters=data.monsters.filter(x=>x.id!==id);
+  saveData();renderMonsters();
+  document.getElementById('monster-detail').innerHTML='<div class="empty-state"><div class="empty-icon">🐉</div><p>Vyber monstrum ze seznamu.</p></div>';
+}
+function addMonsterToCombat(id){
+  const m=data.monsters.find(x=>x.id===id);if(!m)return;
+  const c={id:uid(),name:m.name,type:'enemy',initiative:Math.floor(Math.random()*20)+1+modNum(m.dex||10),hpMax:parseInt(m.hpavg)||10,hpCurrent:parseInt(m.hpavg)||10,ac:parseInt(m.ac)||10,conditions:[]};
+  data.combat.combatants.push(c);
+  data.combat.combatants.sort((a,b)=>b.initiative-a.initiative);
+  saveData();flash(`${m.name} přidán do boje`);
+}
+
+// ─── NPC ──────────────────────────────────────────────────────────────────────
+function roleBadge(r){const map={Spojenec:'badge-green',Nepřítel:'badge-red',Neutrální:'badge-gray',Obchodník:'badge-gold',Questgiver:'badge-gold'};return map[r]||'badge-gray';}
+let npcFilter='',npcRoleFilter='';
+function filterNPCs(q){npcFilter=q.toLowerCase();renderNPCs();}
+function filterNPCsByRole(r){npcRoleFilter=r;renderNPCs();}
+
+function openNPCModal(id=null){
+  editingId.npc=id;
+  const n=id?data.npcs.find(x=>x.id===id):null;
+  document.getElementById('npc-modal-title').textContent=id?'👤 Upravit NPC':'👤 Přidat NPC';
+  ['name','role','race','class','location','appearance','motivation','dialogs','secrets','notes','ac','hp','pb','str','dex','con','int','wis','cha'].forEach(f=>{
+    const el=document.getElementById('n-'+f);if(el)el.value=n?(n[f]||''):'';
+  });
+  ['str','dex','con','int','wis','cha'].forEach(a=>autoMod('n-'+a,'n-'+a+'-mod'));
+  const prev=document.getElementById('n-img-preview');
+  if(prev)prev.innerHTML=n&&n.image?`<img src="${n.image}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">`:' 👤';
+  const imgd=document.getElementById('n-img-data');
+  if(imgd)imgd.value=n&&n.image?n.image:'';
+  openModal('modal-npc');
+}
+
+function saveNPC(){
+  try {
+    const name=document.getElementById('n-name').value.trim();
+    if(!name){flash('Zadej jméno NPC!','red');return;}
+    const obj={id:editingId.npc||uid()};
+    ['name','role','race','class','location','appearance','motivation','dialogs','secrets','notes','ac','hp','pb','str','dex','con','int','wis','cha'].forEach(function(f){
+      const el=document.getElementById('n-'+f);if(el)obj[f]=el.value;
+    });
+    const imgEl=document.getElementById('n-img-data');
+    obj.image=imgEl?imgEl.value:'';
+    if(editingId.npc){const i=data.npcs.findIndex(function(x){return x.id===editingId.npc;});if(i>-1)data.npcs[i]=obj;}
+    else data.npcs.push(obj);
+    saveData();
+    closeModal('modal-npc');
+    renderNPCs();
+    flash('NPC uloženo ✓');
+  } catch(e) {
+    alert('Chyba při ukládání: ' + e.message);
+    console.error('saveNPC error:', e);
+  }
+}
+
+function renderNPCs(){
+  let list=data.npcs.filter(n=>n.name.toLowerCase().includes(npcFilter)&&(!npcRoleFilter||n.role===npcRoleFilter));
+  const el=document.getElementById('npc-list');
+  if(!list.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">👤</div><p>Žádná NPC</p><button class="btn btn-gold" onclick="openNPCModal()">+ Přidat NPC</button></div>';return;}
+  el.innerHTML=list.map(n=>`
+    <div class="item-card" onclick="showNPCDetail('${n.id}')" id="ncard-${n.id}">
+      ${n.image?`<img class="entity-img-small" src="${n.image}" onclick="event.stopPropagation();zoomImage('${n.image.replace(/'/g,'\\\'')}')">`:'<div style="width:48px;height:48px;background:var(--bg4);border:1px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">👤</div>'}
+      <div style="flex:1;min-width:0">
+        <div class="item-name">${n.name}</div>
+        <div class="item-meta">${n.race||''} ${n.class?'· '+n.class:''}</div>
+      </div>
+      <span class="badge ${roleBadge(n.role)}">${n.role||'—'}</span>
+    </div>`).join('');
+}
+
+function showNPCDetail(id){
+  const n=data.npcs.find(x=>x.id===id);if(!n)return;
+  document.querySelectorAll('#npc-list .item-card').forEach(c=>c.classList.remove('selected'));
+  const card=document.getElementById('ncard-'+id);if(card)card.classList.add('selected');
+  const hasStats=n.str||n.dex||n.con||n.int||n.wis||n.cha;
+  document.getElementById('npc-detail').innerHTML=`
+    <div class="card">
+      ${n.image?`<div style="margin-bottom:12px"><img src="${n.image}" style="width:100%;max-height:260px;object-fit:cover;border-radius:6px;border:1px solid var(--border);cursor:zoom-in" onclick="zoomImage('${n.image.replace(/'/g,'\\\'')}')"></div>`:''}
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div>
+          <h2 style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--gold2)">${n.name}</h2>
+          <div style="color:var(--text3);margin-top:2px">${n.race||''} ${n.class?'· '+n.class:''} ${n.location?'· 📍'+n.location:''}</div>
+        </div>
+        <span class="badge ${roleBadge(n.role)}">${n.role||'—'}</span>
+      </div>
+      ${n.ac||n.hp?`<div style="display:flex;gap:8px;margin-bottom:10px"><span class="badge badge-red">OČ ${n.ac||'—'}</span><span class="badge badge-gray">ŽB ${n.hp||'—'}</span>${n.pb?`<span class="badge badge-gold">PB +${n.pb}</span>`:''}</div>`:''}
+      ${hasStats?`
+        <div class="stat-block" style="margin-bottom:12px">
+          <div class="stats-grid">
+            ${[['SÍL',n.str],['OBR',n.dex],['ODL',n.con],['INT',n.int],['MDR',n.wis],['CHA',n.cha]].map(([nm,v])=>`
+              <div class="stat-box"><div class="stat-name">${nm}</div><div class="stat-val">${v||10}</div><div class="stat-mod">${modStr(v||10)}</div></div>`).join('')}
+          </div>
+        </div>`:''}
+      ${sect('Vzhled',n.appearance)}
+      ${sect('Motivace',n.motivation)}
+      ${sect('Dialogy',n.dialogs,'pre')}
+      ${sect('Tajemství',n.secrets)}
+      ${sect('Poznámky',n.notes)}
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-outline btn-sm" onclick="openNPCModal('${n.id}')">✏️ Upravit</button>
+        <button class="btn btn-outline btn-sm" onclick="exportRecord('npc','${n.id}')">⬇ Export</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteNPC('${n.id}')">🗑 Smazat</button>
+      </div>
+    </div>`;
+}
+function sect(title,content,mode=''){
+  if(!content)return'';
+  return`<div style="margin-bottom:12px"><div style="font-family:'Cinzel',serif;font-size:0.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">${title}</div><div style="color:var(--text);${mode==='pre'?'white-space:pre-wrap':''}">${content}</div></div>`;
+}
+function deleteNPC(id){
+  if(!confirm('Opravdu smazat?'))return;
+  data.npcs=data.npcs.filter(x=>x.id!==id);
+  saveData();renderNPCs();
+  document.getElementById('npc-detail').innerHTML='<div class="empty-state"><div class="empty-icon">👤</div><p>Vyber NPC ze seznamu.</p></div>';
+}
+
+// ─── LOCATIONS ────────────────────────────────────────────────────────────────
+let locFilter='',locTypeFilter='';
+function filterLocations(q){locFilter=q.toLowerCase();renderLocations();}
+function filterLocationsByType(t){locTypeFilter=t;renderLocations();}
+
+function openLocationModal(id=null){
+  editingId.location=id;
+  const l=id?data.locations.find(x=>x.id===id):null;
+  document.getElementById('location-modal-title').textContent=id?'🗺️ Upravit lokaci':'🗺️ Přidat lokaci';
+  ['name','type','connected','atmosphere','description','npcs','monsters','treasure','notes'].forEach(f=>{
+    const el=document.getElementById('l-'+f);if(el)el.value=l?(l[f]||''):'';
+  });
+  // map
+  const mapd=document.getElementById('l-map-data');if(mapd)mapd.value=l&&l.map?l.map:'';
+  const mapPrev=document.getElementById('l-map-preview');
+  const mapDrop=document.getElementById('l-map-dropzone');
+  if(l&&l.map){
+    if(mapPrev)mapPrev.innerHTML=`<div style="position:relative"><img src="${l.map}" style="width:100%;max-height:200px;object-fit:cover;border-radius:4px;border:1px solid var(--border)"><button class="btn btn-danger btn-sm" style="position:absolute;top:6px;right:6px" onclick="clearMap()">✕ Odebrat mapu</button></div>`;
+    if(mapDrop)mapDrop.style.display='none';
+  } else {
+    if(mapPrev)mapPrev.innerHTML='';
+    if(mapDrop)mapDrop.style.display='';
+  }
+  openModal('modal-location');
+}
+
+function saveLocation(){
+  const name=document.getElementById('l-name').value.trim();
+  if(!name){flash('Zadej název!','red');return;}
+  const obj={id:editingId.location||uid()};
+  ['name','type','connected','atmosphere','description','npcs','monsters','treasure','notes'].forEach(f=>{
+    const el=document.getElementById('l-'+f);if(el)obj[f]=el.value;
+  });
+  obj.map=document.getElementById('l-map-data')?.value||'';
+  if(editingId.location){const i=data.locations.findIndex(x=>x.id===editingId.location);data.locations[i]=obj;}
+  else data.locations.push(obj);
+  saveData();closeModal('modal-location');renderLocations();flash('Lokace uložena ✓');
+}
+
+function renderLocations(){
+  let list=data.locations.filter(l=>l.name.toLowerCase().includes(locFilter)&&(!locTypeFilter||l.type===locTypeFilter));
+  const el=document.getElementById('location-list');
+  const typeIcon={'Město':'🏙️','Dungeon':'⚔️','Příroda':'🌲','Hrad':'🏰','Jeskyně':'🕳️','Hospoda':'🍺','Loď':'⛵','Zájezdní hostinec':'🛏️','Jiné':'📍'};
+  if(!list.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">🗺️</div><p>Žádné lokace</p><button class="btn btn-gold" onclick="openLocationModal()">+ Přidat lokaci</button></div>';return;}
+  el.innerHTML=list.map(l=>`
+    <div class="item-card" onclick="showLocationDetail('${l.id}')" id="lcard-${l.id}">
+      ${l.map?`<img class="entity-img-small" src="${l.map}" onclick="event.stopPropagation();zoomImage('${l.map.replace(/'/g,'\\\'')}')">`:
+      `<div style="width:48px;height:48px;background:var(--bg4);border:1px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">${typeIcon[l.type]||'📍'}</div>`}
+      <div style="flex:1;min-width:0">
+        <div class="item-name">${l.name}</div>
+        <div class="item-meta">${l.type||''}</div>
+      </div>
+      <span class="badge badge-gold">${typeIcon[l.type]||'📍'} ${l.type||'—'}</span>
+    </div>`).join('');
+}
+
+function showLocationDetail(id){
+  const l=data.locations.find(x=>x.id===id);if(!l)return;
+  document.querySelectorAll('#location-list .item-card').forEach(c=>c.classList.remove('selected'));
+  const card=document.getElementById('lcard-'+id);if(card)card.classList.add('selected');
+  document.getElementById('location-detail').innerHTML=`
+    <div class="card">
+      ${l.map?`<div style="margin-bottom:12px"><img src="${l.map}" style="width:100%;max-height:300px;object-fit:cover;border-radius:6px;border:1px solid var(--border);cursor:zoom-in" onclick="zoomImage('${l.map.replace(/'/g,'\\\'')}')"></div>`:''}
+      <h2 style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--gold2);margin-bottom:4px">${l.name}</h2>
+      <div style="color:var(--text3);margin-bottom:12px">${l.type||''} ${l.connected?'· Spojena: '+l.connected:''}</div>
+      ${sect('Atmosféra (pro hráče)',l.atmosphere)}
+      ${sect('Detailní popis',l.description,'pre')}
+      ${l.npcs?`<div style="margin-bottom:8px"><span class="badge badge-green" style="font-size:0.75rem;padding:3px 10px">NPC: ${l.npcs}</span></div>`:''}
+      ${l.monsters?`<div style="margin-bottom:8px"><span class="badge badge-red" style="font-size:0.75rem;padding:3px 10px">Monstra: ${l.monsters}</span></div>`:''}
+      ${sect('Poklady',l.treasure)}
+      ${sect('Poznámky',l.notes)}
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-outline btn-sm" onclick="openLocationModal('${l.id}')">✏️ Upravit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteLocation('${l.id}')">🗑 Smazat</button>
+      </div>
+    </div>`;
+}
+function deleteLocation(id){
+  if(!confirm('Opravdu smazat?'))return;
+  data.locations=data.locations.filter(x=>x.id!==id);
+  saveData();renderLocations();
+  document.getElementById('location-detail').innerHTML='<div class="empty-state"><div class="empty-icon">🗺️</div><p>Vyber lokaci ze seznamu.</p></div>';
+}
+
+// ─── SESSIONS ─────────────────────────────────────────────────────────────────
+function openSessionModal(id=null){
+  editingId.session=id;
+  const s=id?data.sessions.find(x=>x.id===id):null;
+  document.getElementById('session-modal-title').textContent=id?'📜 Upravit sezení':'📜 Nové sezení';
+  ['name','date','plan','summary','cliffhanger'].forEach(f=>{const el=document.getElementById('s-'+f);if(el)el.value=s?(s[f]||''):'';});
+  if(!s)document.getElementById('s-date').value=new Date().toISOString().split('T')[0];
+  openModal('modal-session');
+}
+function saveSession(){
+  const name=document.getElementById('s-name').value.trim();
+  if(!name){flash('Zadej název!','red');return;}
+  const obj={id:editingId.session||uid()};
+  ['name','date','plan','summary','cliffhanger'].forEach(f=>{const el=document.getElementById('s-'+f);if(el)obj[f]=el.value;});
+  if(editingId.session){const i=data.sessions.findIndex(x=>x.id===editingId.session);data.sessions[i]=obj;}
+  else data.sessions.push(obj);
+  saveData();closeModal('modal-session');renderSessions();flash('Sezení uloženo ✓');
+}
+function renderSessions(){
+  const el=document.getElementById('session-list');
+  if(!data.sessions.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">📜</div><p>Žádná sezení</p><button class="btn btn-gold" onclick="openSessionModal()">+ Přidat sezení</button></div>';return;}
+  el.innerHTML=[...data.sessions].reverse().map(s=>`
+    <div class="item-card" onclick="showSessionDetail('${s.id}')" id="scard-${s.id}">
+      <div><div class="item-name">${s.name}</div><div class="item-meta">${s.date||''}</div></div>
+    </div>`).join('');
+}
+function showSessionDetail(id){
+  const s=data.sessions.find(x=>x.id===id);if(!s)return;
+  document.querySelectorAll('#session-list .item-card').forEach(c=>c.classList.remove('selected'));
+  const card=document.getElementById('scard-'+id);if(card)card.classList.add('selected');
+  document.getElementById('session-detail').innerHTML=`
+    <div class="card">
+      <h2 style="font-family:'Cinzel',serif;font-size:1.2rem;color:var(--gold2);margin-bottom:4px">${s.name}</h2>
+      ${s.date?`<div style="color:var(--text3);margin-bottom:12px">📅 ${s.date}</div>`:''}
+      ${sect('Plán / příprava',s.plan,'pre')}
+      ${sect('Shrnutí sezení',s.summary,'pre')}
+      ${sect('Cliffhanger / příští sezení',s.cliffhanger,'pre')}
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-outline btn-sm" onclick="openSessionModal('${s.id}')">✏️ Upravit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSession('${s.id}')">🗑 Smazat</button>
+      </div>
+    </div>`;
+}
+function deleteSession(id){
+  if(!confirm('Opravdu smazat?'))return;
+  data.sessions=data.sessions.filter(x=>x.id!==id);
+  saveData();renderSessions();
+  document.getElementById('session-detail').innerHTML='<div class="empty-state"><div class="empty-icon">📜</div><p>Vyber sezení ze seznamu.</p></div>';
+}
+
+// ─── COMBAT ───────────────────────────────────────────────────────────────────
+const CONDITIONS=['Oslepen','Umrtven','Vystrašen','Uchvácen','Paralyzován','Zkamenělý','Otrávený','Zbaven smyslů','Skloněný','Omráčen','Neviditelný','Zadržen'];
+
+function renderCombat(){
+  const {combatants,currentIndex,round}=data.combat;
+  document.getElementById('round-label').textContent=`Kolo ${round}`;
+  document.getElementById('turn-label').textContent=combatants.length?('Na tahu: '+(combatants[currentIndex%combatants.length]?.name||'—')):'Žádní účastníci';
+  const list=document.getElementById('combatant-list');
+  if(!combatants.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">⚔️</div><p>Přidej účastníky boje</p></div>';}
+  else{
+    list.innerHTML=combatants.map((c,i)=>{
+      const pct=Math.max(0,Math.round((c.hpCurrent/c.hpMax)*100));
+      const hpColor=pct>50?'var(--green2)':pct>25?'#e8b860':'var(--red3)';
+      return`<div class="combatant-row ${i===currentIndex%combatants.length?'active-turn':''} ${c.hpCurrent<=0?'dead':''}">
+        <div class="init-badge ${c.type}">${c.initiative}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span style="font-family:'Cinzel',serif;font-size:0.88rem;font-weight:600">${c.name}</span>
+            <span style="font-size:0.72rem;color:var(--text3)">OČ ${c.ac}</span>
+            ${c.hpCurrent<=0?'<span class="badge badge-red">💀</span>':''}
+          </div>
+          <div class="hp-bar-wrap">
+            <div class="hp-label"><span>ŽB</span><span>${c.hpCurrent}/${c.hpMax}</span></div>
+            <div class="hp-bar"><div class="hp-fill" style="width:${pct}%;background:${hpColor}"></div></div>
+          </div>
+          ${c.conditions&&c.conditions.length?`<div class="conditions" style="margin-top:4px">${c.conditions.map(con=>`<span class="condition-tag" onclick="removeCondition('${c.id}','${con}')">${con} ×</span>`).join('')}</div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+          <div class="hp-controls">
+            <button class="btn btn-sm btn-danger" onclick="changeHP('${c.id}',-1)">−</button>
+            <input class="hp-input" type="number" id="hpi-${c.id}" value="5" min="1">
+            <button class="btn btn-sm btn-outline" onclick="changeHP('${c.id}',1)">+</button>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-icon btn-outline btn-sm" onclick="addConditionPrompt('${c.id}')" title="Přidat stav">🏷</button>
+            <button class="btn btn-icon btn-danger btn-sm" onclick="removeCombatant('${c.id}')">✕</button>
+          </div>
+        </div>
+      </div>`;}).join('');
+  }
+  document.getElementById('condition-reference').innerHTML=CONDITIONS.map(c=>`<span class="condition-tag">${c}</span>`).join('');
+}
+
+function changeHP(id,sign){
+  const c=data.combat.combatants.find(x=>x.id===id);if(!c)return;
+  const amt=parseInt(document.getElementById('hpi-'+id)?.value)||5;
+  c.hpCurrent=Math.max(0,Math.min(c.hpMax,c.hpCurrent+(amt*sign)));
+  saveData();renderCombat();
+}
+function addConditionPrompt(id){
+  const cond=prompt('Stav:\n'+CONDITIONS.join(', '));
+  if(!cond)return;
+  const c=data.combat.combatants.find(x=>x.id===id);if(!c)return;
+  if(!c.conditions)c.conditions=[];
+  if(!c.conditions.includes(cond))c.conditions.push(cond);
+  saveData();renderCombat();
+}
+function removeCondition(cid,cond){
+  const c=data.combat.combatants.find(x=>x.id===cid);if(!c)return;
+  c.conditions=c.conditions.filter(x=>x!==cond);
+  saveData();renderCombat();
+}
+function removeCombatant(id){
+  data.combat.combatants=data.combat.combatants.filter(x=>x.id!==id);
+  if(data.combat.currentIndex>=data.combat.combatants.length)data.combat.currentIndex=0;
+  saveData();renderCombat();
+}
+function nextTurn(){
+  if(!data.combat.combatants.length)return;
+  data.combat.currentIndex=(data.combat.currentIndex+1)%data.combat.combatants.length;
+  if(data.combat.currentIndex===0)data.combat.round++;
+  saveData();renderCombat();
+}
+function resetCombat(){
+  if(!confirm('Resetovat souboj?'))return;
+  data.combat={combatants:[],currentIndex:0,round:1};
+  saveData();renderCombat();
+}
+function addCombatantModal(){
+  const sel=document.getElementById('c-from-bestiary');
+  sel.innerHTML='<option value="">— vybrat monstrum —</option>'+data.monsters.map(m=>`<option value="${m.id}">${m.name} (OČ ${m.ac||'?'}, ŽB ${m.hpavg||'?'})</option>`).join('');
+  ['c-name','c-init','c-hp-max','c-ac'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('c-type').value='enemy';
+  openModal('modal-combatant');
+}
+function fillFromBestiary(id){
+  if(!id)return;
+  const m=data.monsters.find(x=>x.id===id);if(!m)return;
+  document.getElementById('c-name').value=m.name;
+  document.getElementById('c-hp-max').value=m.hpavg||10;
+  document.getElementById('c-ac').value=m.ac||10;
+  document.getElementById('c-init').value=Math.floor(Math.random()*20)+1+modNum(m.dex||10);
+}
+function addCombatant(){
+  const name=document.getElementById('c-name').value.trim();
+  if(!name){flash('Zadej jméno!','red');return;}
+  const hpMax=parseInt(document.getElementById('c-hp-max').value)||10;
+  const c={id:uid(),name,type:document.getElementById('c-type').value,initiative:parseInt(document.getElementById('c-init').value)||10,hpMax,hpCurrent:hpMax,ac:parseInt(document.getElementById('c-ac').value)||10,conditions:[]};
+  data.combat.combatants.push(c);
+  data.combat.combatants.sort((a,b)=>b.initiative-a.initiative);
+  saveData();closeModal('modal-combatant');renderCombat();flash(`${name} přidán`);
+}
+
+// ─── DICE ROLLER ──────────────────────────────────────────────────────────────
+function setDice(d){
+  selectedDice=d;
+  document.querySelectorAll('[id^="dbtn-"]').forEach(b=>b.classList.remove('btn-gold'));
+  document.querySelectorAll('[id^="dbtn-"]').forEach(b=>b.classList.add('btn-outline'));
+  const btn=document.getElementById('dbtn-'+d);
+  if(btn){btn.classList.remove('btn-outline');btn.classList.add('btn-gold');}
+}
+function rollDice(){
+  const count=Math.max(1,Math.min(20,parseInt(document.getElementById('dice-count')?.value)||1));
+  const bonus=parseInt(document.getElementById('dice-bonus')?.value)||0;
+  const rolls=[];
+  for(let i=0;i<count;i++)rolls.push(Math.floor(Math.random()*selectedDice)+1);
+  const total=rolls.reduce((a,b)=>a+b,0)+bonus;
+  const isCrit=rolls.some(r=>r===selectedDice)&&selectedDice===20;
+  const isFail=rolls.some(r=>r===1)&&selectedDice===20;
+  const el=document.getElementById('dice-result');
+  el.innerHTML=`
+    <div style="font-family:'Cinzel',serif;font-size:0.78rem;color:var(--text3);margin-bottom:4px">${count}k${selectedDice}${bonus!==0?(bonus>0?'+'+bonus:bonus):''}</div>
+    <div style="font-family:'Cinzel',serif;font-size:2.8rem;font-weight:900;color:${isCrit?'var(--gold2)':isFail?'var(--red3)':'var(--text)'}">${total}</div>
+    ${count>1?`<div style="font-size:0.78rem;color:var(--text3)">[${rolls.join(', ')}]${bonus!==0?' + '+bonus:''}</div>`:''}
+    ${isCrit?'<div style="color:var(--gold2);font-family:\'Cinzel\',serif;font-size:0.8rem">⭐ KRITICKÝ ZÁSAH!</div>':''}
+    ${isFail?'<div style="color:var(--red3);font-family:\'Cinzel\',serif;font-size:0.8rem">💀 KRITICKÉ SELHÁNÍ!</div>':''}
+  `;
+  diceHistory.unshift({label:`${count}k${selectedDice}${bonus!==0?(bonus>0?'+'+bonus:bonus):''}`,result:total,rolls});
+  if(diceHistory.length>10)diceHistory.pop();
+  document.getElementById('dice-history-list').innerHTML=diceHistory.slice(1).map(h=>`
+    <div style="display:flex;justify-content:space-between;padding:3px 6px;border-bottom:1px solid var(--border);font-size:0.8rem;color:var(--text3)">
+      <span>${h.label}</span><span style="color:var(--text2);font-weight:600">${h.result}</span>
+    </div>`).join('');
+}
+
+// ─── ZASTENA ──────────────────────────────────────────────────────────────────
+function renderZastena(){
+  if(!data.zastena||!data.zastena.panels)data.zastena={panels:[{title:'📌 Aktuální scéna',content:''},{title:'🎯 Cíle sezení',content:''},{title:'⚡ Rychlé reference',content:'Pasivní vnímání hráčů:\nAC hráčů:\nInitiativa hráčů:'},{title:'🏆 Odměny / XP',content:''},{title:'📖 Důležité NPCnotes',content:''},{title:'🗺️ Aktuální lokace',content:''}]};
+  const grid=document.getElementById('zastena-grid');
+  grid.innerHTML=data.zastena.panels.map((p,i)=>{
+    const sz=p.size||'normal';
+    const cls='zastena-panel'+(sz==='wide'?' wide':sz==='full'?' full':'');
+    const h=p.height?`style="height:${p.height}px"`:'';
+    return `<div class="${cls}">
+      <div class="zastena-panel-title">
+        <input value="${p.title}" style="background:none;border:none;color:var(--gold2);font-family:'Cinzel',serif;font-size:0.78rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;width:100%;outline:none" oninput="updateZastenaTitle(${i},this.value)">
+        <div style="display:flex;gap:3px;flex-shrink:0">
+          <button class="psz ${sz==='normal'?'on':''}" onclick="setZSz(${i},'normal')">1×</button>
+          <button class="psz ${sz==='wide'?'on':''}" onclick="setZSz(${i},'wide')">2×</button>
+          <button class="psz ${sz==='full'?'on':''}" onclick="setZSz(${i},'full')">↔</button>
+          <button class="btn btn-danger btn-sm" style="padding:2px 6px;font-size:0.65rem;margin-left:3px" onclick="removeZastenaPanel(${i})">✕</button>
+        </div>
+      </div>
+      <textarea class="zastena-note" oninput="updateZastenaContent(${i},this.value)" onmouseup="saveZH(${i},this)" placeholder="Poznámky..." ${h}>${p.content}</textarea>
+    </div>`;
+  }).join('');
+    grid.innerHTML+=`<div class="zastena-panel" style="align-items:center;justify-content:center;border-style:dashed;cursor:pointer;min-height:120px" onclick="addZastenaPanel()">
+    <div style="text-align:center;color:var(--text3)">
+      <div style="font-size:2rem;margin-bottom:8px">+</div>
+      <div style="font-family:'Cinzel',serif;font-size:0.75rem">Přidat panel</div>
+    </div>
+  </div>`;
+}
+function updateZastenaTitle(i,val){if(data.zastena.panels[i])data.zastena.panels[i].title=val;saveData();}
+function updateZastenaContent(i,val){if(data.zastena.panels[i])data.zastena.panels[i].content=val;saveData();}
+function addZastenaPanel(){data.zastena.panels.push({title:'📝 Nový panel',content:''});saveData();renderZastena();}
+function removeZastenaPanel(i){if(!confirm('Smazat panel?'))return;data.zastena.panels.splice(i,1);saveData();renderZastena();}
+function saveZastena(){saveData();flash('Zástěna uložena ✓');}
+function setZSz(i,sz){if(data.zastena.panels[i]){data.zastena.panels[i].size=sz;saveData();renderZastena();}}
+function saveZH(i,el){if(data.zastena.panels[i]&&el.offsetHeight>60){data.zastena.panels[i].height=el.offsetHeight;saveData();}}
+
+// ─── EXPORT / IMPORT ──────────────────────────────────────────────────────────
+function clearOldImages(){
+  // Vymaže obrázky záznamů které už neexistují
+  const validIds = new Set();
+  (data.monsters||[]).forEach(function(m){validIds.add('dm-img-m_'+m.id);});
+  (data.npcs||[]).forEach(function(n){validIds.add('dm-img-n_'+n.id);});
+  (data.locations||[]).forEach(function(l){validIds.add('dm-img-l_'+l.id);});
+  const toDelete = [];
+  for(var i=0;i<localStorage.length;i++){
+    var k=localStorage.key(i);
+    if(k&&k.startsWith('dm-img-')&&!validIds.has(k)) toDelete.push(k);
+  }
+  toDelete.forEach(function(k){localStorage.removeItem(k);});
+  return toDelete.length;
+}
+
+function freeStorage(){
+  var freed = clearOldImages();
+  flash('Uvolněno: ' + freed + ' starých obrázků');
+}
+
+function getStorageUsage(){
+  var total=0;
+  for(var i=0;i<localStorage.length;i++){
+    var k=localStorage.key(i);
+    if(k) total+=(localStorage.getItem(k)||'').length;
+  }
+  return Math.round(total/1024);
+}
+
+function exportData(){
+  const json=JSON.stringify(data,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='dm-pomocnik-'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();
+  flash('Data exportována ✓');
+}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const imp=JSON.parse(ev.target.result);
+      // Detekuj přenosný formát
+      if(imp._dmexport && imp.payload){
+        _singleImport=imp;
+        showSingleImportDialog(imp);
+      } else if(imp.monsters!==undefined||imp.npcs!==undefined){
+        data={...data,...imp};saveData();renderDashboard();flash('Data importována ✓');
+      }else{flash('Neplatný soubor','red');}
+    }catch(err){flash('Chyba při importu','red');}
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+// ─── SDÍLENÝ PŘENOSNÝ FORMÁT ──────────────────────────────────────────────────
+function makeDMExport(type, payload){
+  return {
+    _dmexport: true,
+    version: 1,
+    app: 'dm-pomocnik',
+    exported: new Date().toISOString(),
+    type: type,
+    payload: payload
+  };
+}
+
+function exportRecord(type, id){
+  let rec = null;
+  if(type==='monster') rec=data.monsters.find(x=>x.id===id);
+  else if(type==='npc') rec=data.npcs.find(x=>x.id===id);
+  else if(type==='location') rec=data.locations.find(x=>x.id===id);
+  if(!rec){flash('Záznam nenalezen','red');return;}
+  const wrap=makeDMExport(type,{...rec});
+  const blob=new Blob([JSON.stringify(wrap,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  const safeName=(rec.name||type).replace(/[^a-z0-9áčďéěíňóřšťúůýž ]/gi,'').replace(/\s+/g,'-').toLowerCase();
+  a.download=`${type}-${safeName}.json`;
+  a.click();
+  flash(`Exportováno: ${rec.name} ✓`);
+}
+
+let _singleImport=null;
+
+function showSingleImportDialog(d){
+  const typeLabels={monster:'Monstrum',npc:'NPC',location:'Lokace',spell:'Kouzlo',item:'Předmět'};
+  const typeCz=typeLabels[d.type]||d.type;
+  const name=d.payload.name||'(bez názvu)';
+  const app=d.app||'?';
+  const date=d.exported?new Date(d.exported).toLocaleDateString('cs-CZ'):'';
+  // Podporované typy
+  const supported=['monster','npc','location'];
+  if(!supported.includes(d.type)){
+    flash(`Typ "${typeCz}" nelze importovat do DM Pomocníku.`,'red');
+    _singleImport=null;return;
+  }
+  // Duplicita
+  let exists=false;
+  if(d.type==='monster') exists=data.monsters.some(m=>m.name.toLowerCase()===name.toLowerCase());
+  else if(d.type==='npc') exists=data.npcs.some(n=>n.name.toLowerCase()===name.toLowerCase());
+  else if(d.type==='location') exists=data.locations.some(l=>l.name.toLowerCase()===name.toLowerCase());
+  document.getElementById('simp-info').innerHTML=
+    `<strong>${name}</strong> <span style="opacity:.7">(${typeCz})</span><br>`+
+    `<small style="opacity:.6">Z: ${app}${date?' · '+date:''}</small>`+
+    (exists?`<br><span style="color:#e05050;font-size:.82rem">⚠ Záznam se stejným jménem již existuje.</span>`:'');
+  document.getElementById('simp-modal').style.display='flex';
+}
+
+function doSingleImport(mode){
+  if(!_singleImport)return;
+  const d=_singleImport;
+  const p={...d.payload};
+  const newId=uid();
+
+  if(mode==='add'){
+    p.id=newId;
+    if(d.type==='monster'){
+      data.monsters.push(p);
+      saveData();renderMonsters();flash(`Přidáno monstrum: ${p.name} ✓`);
+    } else if(d.type==='npc'){
+      // Normalizace polí pro DM Pomocník
+      const n={id:newId,name:p.name||'',role:p.role||'Neutrální',race:p.race||'',
+        class:p.class||p.cls||'',location:p.location||'',appearance:p.appearance||p.description||'',
+        motivation:p.motivation||'',dialogs:p.dialogs||p.speechStyle||'',
+        secrets:p.secrets||'',notes:p.notes||'',ac:p.ac||'',hp:p.hp||p.hpMax||'',
+        pb:p.pb||'',str:p.str||p.stats?.SÍL||'10',dex:p.dex||p.stats?.OBR||'10',
+        con:p.con||p.stats?.ODO||'10',int:p.int||p.stats?.INT||'10',
+        wis:p.wis||p.stats?.MOU||'10',cha:p.cha||p.stats?.CHA||'10',
+        image:p.image||p.portrait||''};
+      data.npcs.push(n);
+      saveData();renderNPCs();flash(`Přidáno NPC: ${n.name} ✓`);
+    } else if(d.type==='location'){
+      data.locations.push(p);
+      saveData();renderLocations();flash(`Přidána lokace: ${p.name} ✓`);
+    }
+  } else if(mode==='replace'){
+    if(d.type==='monster'){
+      const idx=data.monsters.findIndex(m=>m.name.toLowerCase()===p.name.toLowerCase());
+      if(idx>-1){data.monsters[idx]={...data.monsters[idx],...p,id:data.monsters[idx].id};}
+      else{p.id=newId;data.monsters.push(p);}
+      saveData();renderMonsters();flash(`Aktualizováno: ${p.name} ✓`);
+    } else if(d.type==='npc'){
+      const idx=data.npcs.findIndex(n=>n.name.toLowerCase()===p.name.toLowerCase());
+      if(idx>-1){data.npcs[idx]={...data.npcs[idx],...p,id:data.npcs[idx].id};}
+      else{p.id=newId;data.npcs.push(p);}
+      saveData();renderNPCs();flash(`Aktualizováno: ${p.name} ✓`);
+    } else if(d.type==='location'){
+      const idx=data.locations.findIndex(l=>l.name.toLowerCase()===p.name.toLowerCase());
+      if(idx>-1){data.locations[idx]={...data.locations[idx],...p,id:data.locations[idx].id};}
+      else{p.id=newId;data.locations.push(p);}
+      saveData();renderLocations();flash(`Aktualizováno: ${p.name} ✓`);
+    }
+  }
+  document.getElementById('simp-modal').style.display='none';
+  _singleImport=null;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadData();
+renderDashboard();
+</script>
+</body>
+</html>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+//  SVĚTOVÝ KALENDÁŘ
+// ════════════════════════════════════════════════════════════════
+
+function getKal(){return data.kalendar;}
+
+function renderKalendar(){
+  var k=getKal();
+  if(!k.months||!k.months.length) return;
+  var mi=k.view.month; var yr=k.view.year;
+  var month=k.months[mi];
+  if(!month) return;
+
+  // Titulek
+  document.getElementById('kal-title').textContent=month.name+' · '+yr+' · '+k.worldName;
+
+  // Spočítej offset prvního dne (kde v týdnu začíná měsíc)
+  var totalDaysBefore=0;
+  for(var m=0;m<mi;m++) totalDaysBefore+=k.months[m].days;
+  totalDaysBefore+=(yr-1)*k.daysPerWeek*Math.ceil(365/k.daysPerWeek); // aproximace
+  var startOffset=totalDaysBefore % k.daysPerWeek;
+
+  // Grid
+  var dpw=k.daysPerWeek||7;
+  var grid=document.getElementById('kal-grid');
+  grid.style.gridTemplateColumns='repeat('+dpw+',1fr)';
+
+  var html='';
+  // Záhlaví dní
+  var dn=k.dayNames||[];
+  for(var d=0;d<dpw;d++){
+    html+='<div class="kal-day-header">'+(dn[d]||('Den '+(d+1)))+'</div>';
+  }
+  // Prázdné buňky na začátku
+  for(var s=0;s<startOffset;s++) html+='<div style="min-height:52px"></div>';
+
+  // Svátky pro tento měsíc
+  var holidays={};
+  (k.holidays||[]).forEach(function(h){if(h.month===mi) holidays[h.day]=(holidays[h.day]||[]); holidays[h.day].push(h);});
+  // Události pro tento měsíc+rok
+  var evts={};
+  (k.events||[]).forEach(function(ev){
+    if(ev.month===mi&&ev.year===yr){
+      if(!evts[ev.day]) evts[ev.day]=[];
+      evts[ev.day].push(ev);
+    }
+  });
+
+  var typeIcon={event:'📌',holiday:'🎉',session:'🎲',note:'📝',quest:'⚔'};
+
+  for(var day=1;day<=month.days;day++){
+    var isToday=k.today&&k.today.year===yr&&k.today.month===mi&&k.today.day===day;
+    var isSel=k.selected&&k.selected.year===yr&&k.selected.month===mi&&k.selected.day===day;
+    var isHol=holidays[day]&&holidays[day].length>0;
+    var cls='kal-cell'+(isToday?' today':'')+(isSel?' selected':'')+(isHol?' holiday':'');
+    html+='<div class="'+cls+'" onclick="selectKalDay('+day+')">';
+    html+='<div class="kal-day-num">'+day+'</div>';
+    if(isHol) html+='<div class="kal-holiday-name">'+holidays[day][0].name+'</div>';
+    if(evts[day]){
+      evts[day].slice(0,3).forEach(function(ev){
+        html+='<div class="kal-event-dot '+(ev.type||'event')+'">'+(typeIcon[ev.type]||'📌')+' '+ev.name+'</div>';
+      });
+      if(evts[day].length>3) html+='<div style="font-size:0.6rem;color:var(--text3)">+' +(evts[day].length-3)+' více</div>';
+    }
+    html+='</div>';
+  }
+  grid.innerHTML=html;
+
+  // Seznam událostí vybraného dne
+  renderKalDayEvents();
+}
+
+function renderKalDayEvents(){
+  var k=getKal(); var el=document.getElementById('kal-events-list');
+  if(!k.selected){el.innerHTML='';return;}
+  var s=k.selected;
+  var label=s.day+'. '+k.months[s.month].name+' '+s.year;
+  document.getElementById('kal-selected-label').textContent=label;
+  var evts=(k.events||[]).filter(function(e){return e.year===s.year&&e.month===s.month&&e.day===s.day;});
+  var hols=(k.holidays||[]).filter(function(h){return h.month===s.month&&h.day===s.day;});
+  var typeIcon={event:'📌',holiday:'🎉',session:'🎲',note:'📝',quest:'⚔'};
+  var typeLabel={event:'Herní událost',holiday:'Svátek',session:'Sezení',note:'Poznámka',quest:'Quest'};
+  var html='';
+  hols.forEach(function(h){
+    html+='<div class="kal-event-item"><div class="kal-event-icon">🎉</div>'
+      +'<div><div class="kal-event-name">'+h.name+'</div>'
+      +(h.desc?'<div class="kal-event-meta">'+h.desc+'</div>':'')
+      +'<div class="kal-event-meta" style="color:var(--text3);font-size:0.75rem">Opakující se svátek</div></div></div>';
+  });
+  evts.forEach(function(e,i){
+    html+='<div class="kal-event-item">'
+      +'<div class="kal-event-icon">'+(typeIcon[e.type]||'📌')+'</div>'
+      +'<div style="flex:1"><div class="kal-event-name">'+e.name+'</div>'
+      +'<div class="kal-event-meta">'+(typeLabel[e.type]||e.type)+'</div>'
+      +(e.desc?'<div class="kal-event-meta" style="margin-top:4px">'+e.desc+'</div>':'')
+      +'</div>'
+      +'<button class="btn btn-danger btn-sm" style="flex-shrink:0" onclick="delKalEvent('+i+')">✕</button>'
+      +'</div>';
+  });
+  if(!html) html='<div style="font-family:\'Crimson Pro\',serif;color:var(--text3);font-style:italic;padding:8px">Žádné události pro tento den.</div>';
+  el.innerHTML=html;
+}
+
+function selectKalDay(day){
+  var k=getKal();
+  k.selected={year:k.view.year,month:k.view.month,day:day};
+  saveData(); renderKalendar();
+}
+
+function kalNav(dir){
+  var k=getKal();
+  k.view.month+=dir;
+  if(k.view.month<0){k.view.month=k.months.length-1;k.view.year--;}
+  else if(k.view.month>=k.months.length){k.view.month=0;k.view.year++;}
+  saveData(); renderKalendar();
+}
+
+function goToToday(){
+  var k=getKal();
+  k.view.year=k.today.year; k.view.month=k.today.month;
+  k.selected=Object.assign({},k.today);
+  saveData(); renderKalendar();
+}
+
+function addKalEvent(){
+  var k=getKal();
+  var sel=k.selected||{year:k.today.year,month:k.today.month,day:1};
+  document.getElementById('kev-name').value='';
+  document.getElementById('kev-day').value=sel.day;
+  document.getElementById('kev-year').value=sel.year;
+  document.getElementById('kev-desc').value='';
+  document.getElementById('kev-type').value='event';
+  // Naplň měsíce
+  var monthSel=document.getElementById('kev-month');
+  monthSel.innerHTML=k.months.map(function(m,i){
+    return '<option value="'+i+'"'+(i===sel.month?' selected':'')+'>'+m.name+'</option>';
+  }).join('');
+  openModal('modal-kal-event');
+}
+
+function saveKalEvent(){
+  var name=document.getElementById('kev-name').value.trim();
+  if(!name){flash('Zadej název!','red');return;}
+  var k=getKal();
+  if(!k.events) k.events=[];
+  k.events.push({
+    id:uid(),
+    name:name,
+    day:parseInt(document.getElementById('kev-day').value)||1,
+    month:parseInt(document.getElementById('kev-month').value)||0,
+    year:parseInt(document.getElementById('kev-year').value)||k.today.year,
+    type:document.getElementById('kev-type').value,
+    desc:document.getElementById('kev-desc').value.trim(),
+  });
+  saveData(); closeModal('modal-kal-event'); renderKalendar(); flash('Událost přidána ✓');
+}
+
+function delKalEvent(idx){
+  if(!confirm('Smazat událost?')) return;
+  var k=getKal(); var sel=k.selected;
+  var evts=k.events.filter(function(e){return e.year===sel.year&&e.month===sel.month&&e.day===sel.day;});
+  var toDelete=evts[idx];
+  if(!toDelete) return;
+  k.events=k.events.filter(function(e){return e.id!==toDelete.id;});
+  saveData(); renderKalendar(); flash('Odstraněno');
+}
+
+// ── Nastavení kalendáře ───────────────────────────────────────────────────────
+function openKalSettings(){
+  var k=getKal();
+  document.getElementById('kal-world-name').value=k.worldName||'';
+  document.getElementById('kal-current-year').value=k.today.year||1000;
+  document.getElementById('kal-days-week').value=k.daysPerWeek||7;
+  document.getElementById('kal-day-names').value=(k.dayNames||[]).join(', ');
+  renderKalMonthsEditor();
+  renderKalHolidaysEditor();
+  openModal('modal-kal-settings');
+}
+
+function renderKalMonthsEditor(){
+  var k=getKal();
+  var el=document.getElementById('kal-months-editor');
+  el.innerHTML=(k.months||[]).map(function(m,i){
+    return '<div class="kal-month-row">'
+      +'<input class="kal-settings-input" style="max-width:140px" value="'+m.name+'" placeholder="Název" onchange="updateKalMonth('+i+',\'name\',this.value)">'
+      +'<input class="kal-settings-input" style="max-width:60px" type="number" min="1" max="400" value="'+m.days+'" placeholder="Dní" onchange="updateKalMonth('+i+',\'days\',parseInt(this.value))">'
+      +'<span style="font-size:0.75rem;color:var(--text3);flex-shrink:0">dní</span>'
+      +'<input class="kal-settings-input" value="'+(m.desc||'')+'" placeholder="Popis / svátek..." onchange="updateKalMonth('+i+',\'desc\',this.value)">'
+      +'<button class="btn btn-danger btn-sm" onclick="removeKalMonth('+i+')">✕</button>'
+      +'</div>';
+  }).join('');
+}
+
+function renderKalHolidaysEditor(){
+  var k=getKal();
+  var el=document.getElementById('kal-holidays-editor');
+  el.innerHTML=(k.holidays||[]).map(function(h,i){
+    return '<div class="kal-month-row">'
+      +'<input class="kal-settings-input" style="max-width:160px" value="'+h.name+'" placeholder="Název svátku" onchange="updateKalHoliday('+i+',\'name\',this.value)">'
+      +'<select class="form-select" style="max-width:120px;padding:3px 6px;font-size:0.82rem" onchange="updateKalHoliday('+i+',\'month\',parseInt(this.value))">'
+      +k.months.map(function(m,mi){return '<option value="'+mi+'"'+(mi===h.month?' selected':'')+'>'+m.name+'</option>';}).join('')
+      +'</select>'
+      +'<input class="kal-settings-input" style="max-width:50px" type="number" min="1" value="'+h.day+'" placeholder="Den" onchange="updateKalHoliday('+i+',\'day\',parseInt(this.value))">'
+      +'<input class="kal-settings-input" value="'+(h.desc||'')+'" placeholder="Popis..." onchange="updateKalHoliday('+i+',\'desc\',this.value)">'
+      +'<button class="btn btn-danger btn-sm" onclick="removeKalHoliday('+i+')">✕</button>'
+      +'</div>';
+  }).join('');
+}
+
+function updateKalMonth(i,f,v){var k=getKal();if(k.months[i])k.months[i][f]=v;}
+function removeKalMonth(i){var k=getKal();k.months.splice(i,1);renderKalMonthsEditor();}
+function addKalMonth(){var k=getKal();k.months.push({name:'Nový měsíc',days:30,desc:''});renderKalMonthsEditor();}
+function updateKalHoliday(i,f,v){var k=getKal();if(k.holidays[i])k.holidays[i][f]=v;}
+function removeKalHoliday(i){var k=getKal();k.holidays.splice(i,1);renderKalHolidaysEditor();}
+function addKalHoliday(){var k=getKal();if(!k.holidays)k.holidays=[];k.holidays.push({name:'Nový svátek',month:0,day:1,desc:''});renderKalHolidaysEditor();}
+function updateKalDayNames(){
+  var n=parseInt(document.getElementById('kal-days-week').value)||7;
+  var cur=document.getElementById('kal-day-names').value.split(',').map(function(s){return s.trim();});
+  while(cur.length<n) cur.push('Den '+(cur.length+1));
+  cur=cur.slice(0,n);
+  document.getElementById('kal-day-names').value=cur.join(', ');
+}
+
+function saveKalSettings(){
+  var k=getKal();
+  k.worldName=document.getElementById('kal-world-name').value.trim()||'Svět kampaně';
+  var yr=parseInt(document.getElementById('kal-current-year').value)||1000;
+  k.today={year:yr,month:k.today.month||0,day:k.today.day||1};
+  k.view={year:yr,month:k.view.month||0};
+  k.daysPerWeek=parseInt(document.getElementById('kal-days-week').value)||7;
+  k.dayNames=document.getElementById('kal-day-names').value.split(',').map(function(s){return s.trim();});
+  saveData(); closeModal('modal-kal-settings'); renderKalendar(); flash('Kalendář uložen ✓');
+}
+</script>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+//  GOOGLE DRIVE SYNC
+// ════════════════════════════════════════════════════════════════
+
+var GD = {
+  clientId: localStorage.getItem('gdrive_client_id') || '',
+  fileId:   localStorage.getItem('gdrive_file_id')   || '',
+  token:    null,
+  autoSync: localStorage.getItem('gdrive_auto') === 'true',
+  autoTimer: null,
+  FILENAME: 'dm-pomocnik-data.json',
+  SCOPE: 'https://www.googleapis.com/auth/drive.file',
+};
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function gdriveSetDot(state) {
+  var dot = document.getElementById('gdrive-dot');
+  var txt = document.getElementById('gdrive-status-text');
+  if (!dot) return;
+  dot.className = 'gdrive-dot' + (state ? ' ' + state : '');
+  var labels = {
+    connected: 'Google Drive: připojen',
+    syncing:   'Google Drive: synchronizuji...',
+    error:     'Google Drive: chyba připojení',
+    '':        'Google Drive: nepřipojen'
+  };
+  if (txt) txt.textContent = labels[state] || 'Google Drive: ' + state;
+}
+
+function gdriveShowButtons(connected) {
+  var show = function(id, vis) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = vis ? '' : 'none';
+  };
+  show('gdrive-connect-btn',    !connected);
+  show('gdrive-sync-btn',        connected);
+  show('gdrive-load-btn',        connected);
+  show('gdrive-auto-btn',        connected);
+  show('gdrive-disconnect-btn',  connected);
+  if (connected) {
+    var ab = document.getElementById('gdrive-auto-btn');
+    if (ab) ab.textContent = '⏱ Auto: ' + (GD.autoSync ? 'ZAP' : 'VYP');
+  }
+}
+
+function gdriveSetLastSync() {
+  var el = document.getElementById('gdrive-last-sync');
+  if (el) el.textContent = 'Poslední sync: ' + new Date().toLocaleTimeString('cs-CZ');
+  localStorage.setItem('gdrive_last_sync', new Date().toISOString());
+}
+
+// ── Připojení ─────────────────────────────────────────────────────────────────
+function gdriveConnect() {
+  if (!GD.clientId) {
+    // Zobraz setup modal
+    var saved = localStorage.getItem('gdrive_client_id');
+    if (saved) { GD.clientId = saved; }
+    document.getElementById('gdrive-client-id-input').value = GD.clientId;
+    document.getElementById('gdrive-setup-modal').classList.add('open');
+    return;
+  }
+  gdriveAuth();
+}
+
+function gdriveSetupDone() {
+  var cid = document.getElementById('gdrive-client-id-input').value.trim();
+  if (!cid) { flash('Zadej Client ID!', 'red'); return; }
+  GD.clientId = cid;
+  localStorage.setItem('gdrive_client_id', cid);
+  document.getElementById('gdrive-setup-modal').classList.remove('open');
+  gdriveAuth();
+}
+
+function gdriveAuth() {
+  if (!GD.clientId) { flash('Nejdřív nastav Client ID', 'red'); return; }
+  gdriveSetDot('syncing');
+  
+  // Použij Google Identity Services (nová knihovna)
+  try {
+    var client = google.accounts.oauth2.initTokenClient({
+      client_id: GD.clientId,
+      scope: GD.SCOPE,
+      callback: function(resp) {
+        if (resp.error) {
+          gdriveSetDot('error');
+          flash('Chyba přihlášení: ' + resp.error, 'red');
+          return;
+        }
+        GD.token = resp.access_token;
+        gdriveSetDot('connected');
+        gdriveShowButtons(true);
+        flash('Google Drive připojen ✓');
+        // Spusť auto-sync pokud byl zapnutý
+        if (GD.autoSync) gdriveStartAuto();
+        // Zkontroluj jestli existuje soubor
+        gdriveFindFile();
+      }
+    });
+    client.requestAccessToken();
+  } catch(e) {
+    gdriveSetDot('error');
+    flash('Google API se nenačetlo. Zkontroluj Client ID a URL.', 'red');
+    console.error('gdriveAuth error:', e);
+  }
+}
+
+function gdriveDisconnect() {
+  GD.token = null;
+  gdriveSetDot('');
+  gdriveShowButtons(false);
+  gdriveStopAuto();
+  flash('Google Drive odpojen');
+}
+
+// ── Najdi nebo vytvoř soubor ──────────────────────────────────────────────────
+function gdriveFindFile(callback) {
+  if (!GD.token) return;
+  var name = encodeURIComponent(GD.FILENAME);
+  fetch("https://www.googleapis.com/drive/v3/files?q=name%3D'" + GD.FILENAME + "'%20and%20trashed%3Dfalse&spaces=drive&fields=files(id,name,modifiedTime)", {
+    headers: { 'Authorization': 'Bearer ' + GD.token }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (d.files && d.files.length > 0) {
+      GD.fileId = d.files[0].id;
+      localStorage.setItem('gdrive_file_id', GD.fileId);
+      var mod = new Date(d.files[0].modifiedTime).toLocaleString('cs-CZ');
+      var ls = document.getElementById('gdrive-last-sync');
+      if (ls) ls.textContent = 'Drive soubor: upraven ' + mod;
+    }
+    if (callback) callback();
+  })
+  .catch(function(e) { console.warn('gdriveFindFile:', e); if (callback) callback(); });
+}
+
+// ── Uložit na Drive ───────────────────────────────────────────────────────────
+function gdriveSync() {
+  if (!GD.token) { flash('Nejdřív se připoj k Drive', 'red'); return; }
+  gdriveSetDot('syncing');
+  
+  // Připrav data bez obrázků (šetří místo a quota)
+  var exportData = JSON.parse(JSON.stringify(data));
+  // Obrázky ukládáme odděleně lokálně, do Drive jdou jen textová data
+  (exportData.monsters||[]).forEach(function(m){ if(m.image&&m.image.length>100) m.image='__IMG__'; });
+  (exportData.npcs||[]).forEach(function(n){ if(n.image&&n.image.length>100) n.image='__IMG__'; });
+  (exportData.locations||[]).forEach(function(l){ if(l.image&&l.image.length>100) l.image='__IMG__'; });
+  exportData._syncedAt = new Date().toISOString();
+  exportData._version = '3';
+  
+  var json = JSON.stringify(exportData, null, 2);
+  var blob = new Blob([json], { type: 'application/json' });
+  
+  var doUpload = function() {
+    var method, url;
+    if (GD.fileId) {
+      method = 'PATCH';
+      url = 'https://www.googleapis.com/upload/drive/v3/files/' + GD.fileId + '?uploadType=media';
+    } else {
+      method = 'POST';
+      url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+    }
+    
+    if (!GD.fileId) {
+      // Nový soubor – použij multipart
+      var boundary = '-------314159265358979323846';
+      var meta = JSON.stringify({ name: GD.FILENAME, mimeType: 'application/json' });
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var body = '--' + boundary + '\r\nContent-Type: application/json\r\n\r\n' + meta
+          + '\r\n--' + boundary + '\r\nContent-Type: application/json\r\n\r\n' + json
+          + '\r\n--' + boundary + '--';
+        fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + GD.token,
+            'Content-Type': 'multipart/related; boundary=' + boundary,
+          },
+          body: body
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(f){
+          GD.fileId = f.id;
+          localStorage.setItem('gdrive_file_id', GD.fileId);
+          gdriveSetDot('connected');
+          gdriveSetLastSync();
+          flash('Uloženo na Google Drive ✓');
+        })
+        .catch(function(e){ gdriveSetDot('error'); flash('Chyba ukládání: '+e.message, 'red'); });
+      };
+      reader.readAsText(blob);
+    } else {
+      // Aktualizace existujícího souboru
+      fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': 'Bearer ' + GD.token,
+          'Content-Type': 'application/json',
+        },
+        body: json
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(){
+        gdriveSetDot('connected');
+        gdriveSetLastSync();
+        flash('Uloženo na Google Drive ✓');
+      })
+      .catch(function(e){ gdriveSetDot('error'); flash('Chyba ukládání: '+e.message, 'red'); });
+    }
+  };
+  
+  if (GD.fileId) {
+    doUpload();
+  } else {
+    gdriveFindFile(doUpload);
+  }
+}
+
+// ── Načíst z Drive ────────────────────────────────────────────────────────────
+function gdriveLoad() {
+  if (!GD.token) { flash('Nejdřív se připoj k Drive', 'red'); return; }
+  
+  var doLoad = function() {
+    if (!GD.fileId) { flash('Na Drive není žádný soubor. Nejdřív ulož data.', 'red'); return; }
+    gdriveSetDot('syncing');
+    fetch('https://www.googleapis.com/drive/v3/files/' + GD.fileId + '?alt=media', {
+      headers: { 'Authorization': 'Bearer ' + GD.token }
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(imported){
+      if (!imported || typeof imported !== 'object') throw new Error('Neplatná data');
+      // Zachovej lokální obrázky
+      var mergeImages = function(arr, localArr, field) {
+        (arr||[]).forEach(function(item) {
+          if (item[field] === '__IMG__') {
+            var local = (localArr||[]).find(function(x){ return x.id===item.id; });
+            if (local && local[field] && local[field] !== '__IMG__') item[field] = local[field];
+          }
+        });
+      };
+      mergeImages(imported.monsters, data.monsters, 'image');
+      mergeImages(imported.npcs,     data.npcs,     'image');
+      mergeImages(imported.locations,data.locations, 'image');
+      
+      data = Object.assign({}, data, imported);
+      saveData();
+      // Re-render aktuální stránky
+      var renders = {dashboard:renderDashboard,bestiar:renderMonsters,npc:renderNPCs,lokace:renderLocations,kampan:renderSessions,pocitadlo:renderCombat,zastena:renderZastena,kalendar:renderKalendar};
+      Object.keys(renders).forEach(function(k){ try{ renders[k](); }catch(e){} });
+      gdriveSetDot('connected');
+      gdriveSetLastSync();
+      flash('Data načtena z Google Drive ✓');
+    })
+    .catch(function(e){ gdriveSetDot('error'); flash('Chyba načítání: '+e.message, 'red'); });
+  };
+  
+  if (GD.fileId) { doLoad(); } else { gdriveFindFile(doLoad); }
+}
+
+// ── Auto-sync ─────────────────────────────────────────────────────────────────
+function gdriveToggleAuto() {
+  GD.autoSync = !GD.autoSync;
+  localStorage.setItem('gdrive_auto', GD.autoSync);
+  var btn = document.getElementById('gdrive-auto-btn');
+  if (btn) btn.textContent = '⏱ Auto: ' + (GD.autoSync ? 'ZAP' : 'VYP');
+  if (GD.autoSync) { gdriveStartAuto(); flash('Auto-sync zapnut (každých 5 min)'); }
+  else { gdriveStopAuto(); flash('Auto-sync vypnut'); }
+}
+
+function gdriveStartAuto() {
+  gdriveStopAuto();
+  if (GD.token && GD.autoSync) {
+    GD.autoTimer = setInterval(function(){
+      if (GD.token) gdriveSync();
+    }, 5 * 60 * 1000); // každých 5 minut
+  }
+}
+
+function gdriveStopAuto() {
+  if (GD.autoTimer) { clearInterval(GD.autoTimer); GD.autoTimer = null; }
+}
+
+// Inicializace – obnov stav UI
+(function initGdrive(){
+  var lastSync = localStorage.getItem('gdrive_last_sync');
+  if (lastSync) {
+    var el = document.getElementById('gdrive-last-sync');
+    if (el) el.textContent = 'Poslední sync: ' + new Date(lastSync).toLocaleString('cs-CZ');
+  }
+  // Pokud měl uložený client ID, připomeň uživateli
+  if (GD.clientId) {
+    var txt = document.getElementById('gdrive-status-text');
+    if (txt) txt.textContent = 'Google Drive: klikni pro připojení';
+  }
+})();
+</script>
